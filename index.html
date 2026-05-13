@@ -322,8 +322,9 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .parcela-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:10px;}
 .parcela-card-desc{font-size:17px;font-weight:600;flex:1;line-height:1.3;}
 .parcela-card-actions{display:flex;gap:4px;flex-shrink:0;align-items:center;}
-.btn-pagar{background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;white-space:nowrap;transition:all 0.15s;}
+.btn-pagar{background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;white-space:nowrap;transition:all 0.15s;touch-action:manipulation;min-height:44px;}
 .btn-pagar:hover{background:rgba(34,197,94,0.22);}
+.btn-pagar:active{background:rgba(34,197,94,0.3);}
 .btn-pagar:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-del-parcela{background:none;border:none;color:#64748b;cursor:pointer;font-size:18px;padding:5px 7px;border-radius:8px;transition:all 0.15s;}
 .btn-del-parcela:hover{color:#f87171;background:rgba(239,68,68,0.12);}
@@ -426,15 +427,15 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .fin-val.green{color:#22c55e;}
 .fin-val.red{color:#f87171;}
 .fin-actions{display:flex;gap:2px;flex-shrink:0;align-items:center;}
-.btn-check{background:none;border:1.5px solid #334155;border-radius:6px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.15s;color:#64748b;flex-shrink:0;}
+.btn-check{background:none;border:1.5px solid #334155;border-radius:6px;min-width:44px;min-height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.15s;color:#64748b;flex-shrink:0;touch-action:manipulation;}
 .btn-check:hover{border-color:#22c55e;color:#22c55e;}
 .btn-check.checked{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#22c55e;}
 .btn-fin-del{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:4px;border-radius:6px;flex-shrink:0;}
 .btn-fin-del:hover{color:#f87171;background:rgba(239,68,68,0.1);}
-.btn-fin-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;flex-shrink:0;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;}
-.btn-fin-edit:hover{color:#60a5fa;background:rgba(96,165,250,0.1);}
-.btn-tx-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;}
-.btn-tx-edit:hover{color:#60a5fa;background:rgba(96,165,250,0.1);}
+.btn-fin-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:8px;border-radius:6px;flex-shrink:0;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(96,165,250,0.2);}
+.btn-fin-edit:active{color:#60a5fa;background:rgba(96,165,250,0.15);}
+.btn-tx-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:8px;border-radius:6px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(96,165,250,0.2);}
+.btn-tx-edit:active{color:#60a5fa;background:rgba(96,165,250,0.15);}
 
 /* Vencimento badge — agora dentro do fin-meta */
 .venc-badge{font-size:10px;padding:1px 6px;border-radius:100px;font-weight:600;flex-shrink:0;white-space:nowrap;}
@@ -638,6 +639,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <div class="nav-item" onclick="pcView('receitas',this)"><span class="icon">💵</span>Entradas</div>
       <div class="nav-item" onclick="pcView('contas',this)"><span class="icon">📋</span>Contas a Pagar</div>
       <div class="nav-item" onclick="pcView('parcelas',this)"><span class="icon">💳</span>Parcelas</div>
+      <div class="nav-item" onclick="pcView('cartoes',this)"><span class="icon">🏦</span>Cartão de Crédito</div>
       <div class="nav-item" onclick="pcView('budget',this)"><span class="icon">🎯</span>Renda Mensal</div>
       <div class="nav-item" onclick="pcView('balanco',this)"><span class="icon">📅</span>Balanço Anual</div>
       <div class="nav-item" onclick="pcView('export',this)"><span class="icon">📤</span>Exportar</div>
@@ -672,6 +674,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <div class="metric-card" style="--mc:#22c55e;cursor:pointer;" onclick="abrirDetalhe('orcamento')"><label>Orçamento restante</label><div class="mv lg green" id="pc-m-brem">—</div><div class="msub" id="pc-m-bpct">Sem orçamento</div></div>
           <div class="metric-card" style="--mc:#60a5fa;"><label>Gastos hoje</label><div class="mv lg" id="pc-m-today">R$ 0,00</div><div class="msub" id="pc-m-tcount">0 transações</div></div>
           <div class="metric-card" style="--mc:#a78bfa;"><label>Maior categoria</label><div class="mv lg" id="pc-m-top" style="font-size:16px;">—</div><div class="msub" id="pc-m-topval">—</div></div>
+          <div class="metric-card" style="--mc:#f59e0b;cursor:pointer;" onclick="pcView('cartoes',document.querySelector('.nav-item[onclick*=cartoes]'))"><label>💳 Cartão de Crédito</label><div class="mv lg" id="pc-m-credito" style="color:#f59e0b;">R$ 0,00</div><div class="msub" id="pc-m-credito-sub">este mês</div></div>
         </div>
         <!-- Card de saldo (entradas vs gastos) -->
         <div class="saldo-card" id="pc-saldo-card">
@@ -707,12 +710,17 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
               </select>
             </div>
             <div class="field"><label>Pagamento</label>
-              <select id="pc-pay">
+              <select id="pc-pay" onchange="onPayChange('pc')">
                 <option value="Pix">💠 Pix</option>
                 <option value="Dinheiro">💵 Dinheiro</option>
                 <option value="Débito">💳 Débito</option>
                 <option value="Crédito">🏦 Crédito</option>
               </select>
+              <div class="cartao-select-wrapper" id="pc-cartao-wrapper">
+                <select id="pc-cartao" style="margin-top:6px;width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;color:#f1f5f9;font-family:'Sora',sans-serif;font-size:13px;outline:none;">
+                  <option value="">— Sem cartão vinculado —</option>
+                </select>
+              </div>
             </div>
             <div class="field"><label>&nbsp;</label><button class="btn-add-pc" id="pc-btn-add" onclick="addExpense('pc')">+ Adicionar</button></div>
           </div>
@@ -903,6 +911,14 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <div id="pc-parcelas-alertas"></div>
         <div class="parcelas-grid" id="pc-parcelas-grid"></div>
       </div>
+      <!-- PC CARTOES -->
+      <div class="view" id="pc-view-cartoes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;">
+          <div></div>
+          <button class="btn-nova-parcela" onclick="abrirModalCartao()">＋ Cadastrar cartão</button>
+        </div>
+        <div class="cartao-grid" id="pc-cartoes-list"></div>
+      </div>
       <!-- PC EXPORT -->
       <div class="view" id="pc-view-export">
         <div class="export-card">
@@ -962,6 +978,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <div class="metric-card" style="--mc:#22c55e;cursor:pointer;" onclick="abrirDetalhe('orcamento')"><label>Orçamento</label><div class="mv sm green" id="mb-m-brem">—</div><div class="msub" id="mb-m-bpct">Sem limite</div></div>
           <div class="metric-card" style="--mc:#60a5fa;"><label>Hoje</label><div class="mv sm" id="mb-m-today">R$ 0,00</div><div class="msub" id="mb-m-tcount">0 transações</div></div>
           <div class="metric-card" style="--mc:#a78bfa;"><label>Maior gasto</label><div class="mv sm" id="mb-m-top" style="font-size:12px;">—</div><div class="msub" id="mb-m-topval">—</div></div>
+          <div class="metric-card" style="--mc:#f59e0b;cursor:pointer;" onclick="mbView('cartoes')"><label>💳 Crédito</label><div class="mv sm" id="mb-m-credito" style="color:#f59e0b;">R$ 0,00</div><div class="msub" id="mb-m-credito-sub">este mês</div></div>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Gastos diários</span><span class="card-sub" id="mb-chart-period">—</span></div><div class="chart-wrap-mb"><canvas id="mb-chart"></canvas></div></div>
         <div class="card"><div class="card-header"><span class="card-title">Por categoria</span><span class="card-sub" id="mb-cat-total">—</span></div><div class="cat-list" id="mb-cat-bars"></div></div>
@@ -1002,12 +1019,17 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
             </select>
           </div>
           <div class="mb-field"><label>Forma de pagamento</label>
-            <select id="mb-pay">
+            <select id="mb-pay" onchange="onPayChange('mb')">
               <option value="Pix">💠 Pix</option>
               <option value="Dinheiro">💵 Dinheiro</option>
               <option value="Débito">💳 Débito</option>
               <option value="Crédito">🏦 Crédito</option>
             </select>
+            <div class="cartao-select-wrapper" id="mb-cartao-wrapper">
+              <select id="mb-cartao" style="margin-top:8px;width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;color:#f1f5f9;font-family:'Sora',sans-serif;font-size:14px;outline:none;">
+                <option value="">— Sem cartão vinculado —</option>
+              </select>
+            </div>
           </div>
           <button class="btn-add-mb" id="mb-btn-add" onclick="addExpense('mb')"><span>＋</span>Registrar gasto</button>
         </div>
@@ -1083,6 +1105,14 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         </div>
         <div id="mb-balanco-totais" style="margin-bottom:14px;"></div>
         <div id="mb-balanco-meses"></div>
+      </div>
+      <!-- MB CARTOES -->
+      <div class="view" id="mb-view-cartoes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <span style="font-size:15px;font-weight:600;">🏦 Cartão de Crédito</span>
+          <button class="btn-nova-parcela" style="font-size:12px;padding:8px 14px;" onclick="abrirModalCartao()">＋ Cartão</button>
+        </div>
+        <div id="mb-cartoes-list" style="display:flex;flex-direction:column;gap:16px;"></div>
       </div>
       <!-- MB SETTINGS -->
       <div class="view" id="mb-view-settings">
@@ -1160,6 +1190,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
     <button class="nav-btn" id="mb-nav-receitas" onclick="mbView('receitas')"><span class="nb-icon">💵</span><span>Entradas</span></button>
     <button class="nav-btn" id="mb-nav-contas" onclick="mbView('contas')"><span class="nb-icon">📋</span><span>Contas</span></button>
     <button class="nav-btn" id="mb-nav-parcelas" onclick="mbView('parcelas')"><span class="nb-icon">💳</span><span>Parcelas</span></button>
+    <button class="nav-btn" id="mb-nav-cartoes" onclick="mbView('cartoes')"><span class="nb-icon">🏦</span><span>Cartão</span></button>
     <button class="nav-btn" id="mb-nav-budget" onclick="mbView('budget')"><span class="nb-icon">🎯</span><span>Renda</span></button>
     <button class="nav-btn" id="mb-nav-balanco" onclick="mbView('balanco')"><span class="nb-icon">📅</span><span>Anual</span></button>
     <button class="nav-btn" id="mb-nav-settings" onclick="mbView('settings')"><span class="nb-icon">⚙️</span><span>Conta</span></button>
@@ -1250,6 +1281,23 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
   </div>
 </div>
 
+<!-- ════ MODAL NOVO CARTÃO ════ -->
+<div class="modal-overlay" id="modal-cartao">
+  <div class="modal-box">
+    <h3>🏦 Cadastrar cartão de crédito</h3>
+    <div class="modal-field"><label>Nome do cartão</label><input type="text" id="cartao-nome-inp" placeholder="Ex: Nubank, Inter, Itaú…"/></div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Dia de fechamento</label><input type="number" id="cartao-fech-inp" placeholder="Ex: 10" min="1" max="31" inputmode="numeric"/></div>
+      <div class="modal-field"><label>Dia de vencimento</label><input type="number" id="cartao-venc-inp" placeholder="Ex: 17" min="1" max="31" inputmode="numeric"/></div>
+    </div>
+    <div class="modal-field"><label>Limite (opcional)</label><input type="number" id="cartao-limite-inp" placeholder="Ex: 5000" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModal('modal-cartao')">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="salvarCartao()">💾 Salvar cartão</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ MODAL NOVA PARCELA ════ -->
 <div class="modal-overlay" id="modal-parcela">
   <div class="modal-box">
@@ -1316,6 +1364,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 // ══════════════════════════════════════════
 const SB_URL = 'https://cnnoclupcdduejzoltit.supabase.co';   // ex: https://xyzabc.supabase.co
 const SB_KEY = 'sb_publishable_WbxHFl2HYKgFWtinLjrxtQ_m2v-aYFW'; // ex: eyJhbGciOiJIUzI1NiIs...
+
 
 // ══════════════════════════════════════════
 // DETECÇÃO DE DISPOSITIVO
@@ -4080,11 +4129,12 @@ document.getElementById('modal-edit').addEventListener('click', function(e) {
 // ══════════════════════════════════════════
 (function() {
   let lastTs = 0;
-  function dispatch(action, id, pago, e) {
+  let pendingBtn = null;
+
+  function dispatch(action, id, pago) {
     const now = Date.now();
-    if (now - lastTs < 300) return; // debounce anti-duplo
+    if (now - lastTs < 350) return;
     lastTs = now;
-    e && e.stopPropagation();
     switch(action) {
       case 'edit-gasto':    editarGasto(id);                  break;
       case 'del-gasto':     delExpense(id);                   break;
@@ -4096,19 +4146,28 @@ document.getElementById('modal-edit').addEventListener('click', function(e) {
       case 'toggle-conta':  toggleConta(id, pago === 'true'); break;
     }
   }
-  // touchend — iOS Safari (passive:false para poder preventDefault)
+
+  // touchstart — registra qual botão foi tocado
+  document.addEventListener('touchstart', function(e) {
+    const btn = e.target.closest('[data-action]');
+    pendingBtn = btn || null;
+  }, { passive: true });
+
+  // touchend — executa só se não houve scroll (mesmo botão ainda pendente)
   document.addEventListener('touchend', function(e) {
     const btn = e.target.closest('[data-action]');
-    if (!btn) return;
+    if (!btn || btn !== pendingBtn) { pendingBtn = null; return; }
+    pendingBtn = null;
     e.preventDefault();
-    dispatch(btn.dataset.action, btn.dataset.id, btn.dataset.pago, e);
-  }, { capture: true, passive: false });
-  // click — PC e fallback Android
+    dispatch(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
+  }, { capture: false, passive: false });
+
+  // click — PC e Android fallback
   document.addEventListener('click', function(e) {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
-    dispatch(btn.dataset.action, btn.dataset.id, btn.dataset.pago, e);
-  }, true);
+    dispatch(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
+  });
 })();
 </script>
 </body>

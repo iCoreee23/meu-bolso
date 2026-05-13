@@ -2208,10 +2208,12 @@ function render() {
       set('pc-m-brem','—'); set('pc-m-bpct','Sem renda ou entradas neste mês');
     }
 
-    const totalCredito = md.filter(e=>e.payment==='Crédito').reduce((s,e)=>s+e.amount,0);
-    set('pc-m-credito', fmt(totalCredito));
+    const totalCreditoGastos = md.filter(e=>e.payment==='Crédito').reduce((s,e)=>s+e.amount,0);
+    const totalCreditoParcelas = parcelas.filter(p=>p.cartao_id && restantes(p)>0).reduce((s,p)=>s+valorParcela(p),0);
+    set('pc-m-credito', fmt(totalCreditoGastos + totalCreditoParcelas));
     const nCredito = md.filter(e=>e.payment==='Crédito').length;
-    set('pc-m-credito-sub', nCredito+' transaç'+(nCredito!==1?'ões':'ão')+' no cartão');
+    const nParc = parcelas.filter(p=>p.cartao_id && restantes(p)>0).length;
+    set('pc-m-credito-sub', nCredito+' transaç'+(nCredito!==1?'ões':'ão')+(nParc?' + '+nParc+' parcela'+(nParc!==1?'s':''):''));
 
     renderCatBars('pc', ct); renderTrend('pc', md, vd); renderList(); renderSidebarCats(ct); renderSaldo(); renderContasAlertas();
   } else {
@@ -2239,10 +2241,12 @@ function render() {
       set('mb-m-brem','—'); set('mb-m-bpct','Sem entradas');
     }
 
-    const totalCreditoMb = md.filter(e=>e.payment==='Crédito').reduce((s,e)=>s+e.amount,0);
-    set('mb-m-credito', fmt(totalCreditoMb));
+    const totalCreditoGastosMb = md.filter(e=>e.payment==='Crédito').reduce((s,e)=>s+e.amount,0);
+    const totalCreditoParcelasMb = parcelas.filter(p=>p.cartao_id && restantes(p)>0).reduce((s,p)=>s+valorParcela(p),0);
+    set('mb-m-credito', fmt(totalCreditoGastosMb + totalCreditoParcelasMb));
     const nCreditoMb = md.filter(e=>e.payment==='Crédito').length;
-    set('mb-m-credito-sub', nCreditoMb+' transaç'+(nCreditoMb!==1?'ões':'ão'));
+    const nParcMb = parcelas.filter(p=>p.cartao_id && restantes(p)>0).length;
+    set('mb-m-credito-sub', nCreditoMb+' transaç'+(nCreditoMb!==1?'ões':'ão')+(nParcMb?' + '+nParcMb+' parcela'+(nParcMb!==1?'s':''):''));
 
     renderCatBars('mb', ct); renderTrend('mb', md, vd); renderList(); renderSaldo(); renderContasAlertas();
     if (document.getElementById('mb-view-budget')?.classList.contains('active')) renderBudgetList();

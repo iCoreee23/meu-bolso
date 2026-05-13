@@ -1748,6 +1748,7 @@ async function doLogout() {
 // ══════════════════════════════════════════
 function launchApp() {
   document.getElementById('auth-screen').classList.remove('show');
+  setSyncStatus('syncing', 'Iniciando…'); // substitui "Conectando…" imediatamente
   const email = currentUser?.email || '';
   const name = currentUser?.user_metadata?.full_name || email.split('@')[0] || 'Usuário';
   const initials = name.slice(0,2).toUpperCase();
@@ -1922,15 +1923,11 @@ async function mobileSync() {
   const text = document.getElementById('mb-sync-text');
   const btn  = document.getElementById('mb-sync-btn');
   if (btn) { btn.disabled=true; if(icon) icon.textContent='⏳'; if(text) text.textContent='…'; }
-  try {
-    await fullSync(true); // true = mostrar toast
-    // Reconecta WebSocket se estiver morto
-    if (!window._wsConn || window._wsConn.readyState !== WebSocket.OPEN) {
-      realtimeStarted = false;
-      subscribeRealtime();
-    }
-  } catch(e) {
-    toast('❌ Erro ao sincronizar', false);
+  const ok = await fullSync(true); // true = mostrar toast
+  // Reconecta WebSocket se estiver morto
+  if (!window._wsConn || window._wsConn.readyState !== WebSocket.OPEN) {
+    realtimeStarted = false;
+    subscribeRealtime();
   }
   if (btn) { btn.disabled=false; if(icon) icon.textContent='🔄'; if(text) text.textContent='Sync'; }
 }
@@ -1984,6 +1981,7 @@ async function fullSync(showToast) {
     }
     if (showToast) toast('✅ Tudo sincronizado!');
     refreshUserMeta().catch(()=>{}); // não bloqueia se falhar
+    return true; // sinaliza sucesso
   } catch(e) {
     console.error('fullSync error:', e);
     const msg = e.message?.includes('JWT') ? 'Sessão expirada — faça login novamente'
@@ -1992,11 +1990,15 @@ async function fullSync(showToast) {
       : 'Erro ao sincronizar';
     setSyncStatus('error', msg);
     if (showToast) toast('❌ '+msg, false);
+    return false; // sinaliza falha (sem relançar — callers checam o retorno)
   }
 }
 
 
 async function loadData() {
+  // WebSocket conecta imediatamente, independente do carregamento de dados
+  if (!realtimeStarted) { realtimeStarted = true; subscribeRealtime(); }
+
   setSyncStatus('syncing','Carregando…');
   try {
     // Verifica se o token está próximo de expirar e renova antes de carregar
@@ -2007,8 +2009,8 @@ async function loadData() {
         await refreshSession(p.refresh_token).catch(()=>{});
       }
     }
-    await fullSync();
-    if (!realtimeStarted) { realtimeStarted = true; subscribeRealtime(); }
+    const ok = await fullSync();
+    if (!ok) throw new Error('sync_failed');
     // Polling de fallback: re-sincroniza a cada 60s se WebSocket não estiver ativo
     if (!window._autoSyncInterval) {
       window._autoSyncInterval = setInterval(function() {
@@ -2018,9 +2020,24 @@ async function loadData() {
       }, 60000);
     }
   } catch(e) {
-    setSyncStatus('error','Erro ao carregar — verifique sua conexão');
-    // Tenta novamente após 5s em caso de falha inicial
-    setTimeout(function() { if (!realtimeStarted) loadData(); }, 5000);
+    setSyncStatus('error','Erro ao carregar — tentando novamente…');
+    // Retry automático: tenta de novo após 5s, até ter sucesso
+    clearTimeout(window._loadRetryTimer);
+    window._loadRetryTimer = setTimeout(async function() {
+      const ok = await fullSync();
+      if (!ok) {
+        // Se ainda falhar, fica tentando a cada 10s
+        clearInterval(window._autoSyncInterval);
+        window._autoSyncInterval = null;
+        window._loadRetryTimer = setTimeout(function() { loadData(); }, 10000);
+      } else if (!window._autoSyncInterval) {
+        window._autoSyncInterval = setInterval(function() {
+          if (!window._wsConn || window._wsConn.readyState !== WebSocket.OPEN) {
+            fullSync().catch(()=>{});
+          }
+        }, 60000);
+      }
+    }, 5000);
   }
 }
 

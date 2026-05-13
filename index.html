@@ -716,7 +716,7 @@ body.hide-vals .stat-box strong {
           <div><div class="page-title" id="pc-page-title">Dashboard</div><div class="page-subtitle" id="pc-page-sub">Visão geral dos seus gastos</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-        <button id="btn-hide-vals-pc" onclick="toggleHideValues()" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">👁 Ocultar</button>
+        <button id="btn-hide-vals-pc" data-action="toggle-hide-vals" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;touch-action:manipulation;">👁 Ocultar</button>
         <div class="month-nav-pc" id="pc-monnav">
           <button onclick="changeMonth(-1)" title="Mês anterior">&#8592;</button>
           <select id="sel-mes" onchange="goToMonthYear()" style="background:#1e293b;border:none;color:#f1f5f9;font-size:14px;font-weight:500;outline:none;cursor:pointer;font-family:'Sora',sans-serif;padding:4px 2px;">
@@ -1008,7 +1008,7 @@ body.hide-vals .stat-box strong {
   <div class="mb-topbar">
     <div class="mb-topbar-left"><div class="mb-logo">💰</div><div class="mb-title">Meu Bolso</div></div>
     <div class="mb-topbar-right">
-      <button id="btn-hide-vals-mb" onclick="toggleHideValues()" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;">👁</button>
+      <button id="btn-hide-vals-mb" data-action="toggle-hide-vals" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;touch-action:manipulation;min-width:36px;min-height:36px;">👁</button>
       <div class="mb-sync-dot syncing" id="mb-sync-dot"></div>
       <button id="mb-sync-btn" onclick="mobileSync()" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">
         <span id="mb-sync-icon">🔄</span><span id="mb-sync-text">Sync</span>
@@ -4597,7 +4597,8 @@ function _dispatchAction(action, id, pago) {
       case 'pagar-parcela': pagarParcela(id);                 break;
       case 'edit-conta':    editarConta(id);                  break;
       case 'del-conta':     delConta(id);                     break;
-      case 'toggle-conta':  toggleConta(id, pago === 'true'); break;
+      case 'toggle-conta':      toggleConta(id, pago === 'true'); break;
+      case 'toggle-hide-vals':  toggleHideValues();              break;
     }
   } catch(err) { toast('❌ Erro: ' + err.message, false); }
 }

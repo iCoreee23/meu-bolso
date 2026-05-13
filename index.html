@@ -411,25 +411,9 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .saldo-item-mb label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
 .saldo-val-mb{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
 
-/* ── Ocultar valores ── */
-body.hide-vals .mv,
-body.hide-vals .saldo-val,
-body.hide-vals .saldo-val-mb,
-body.hide-vals .tx-amount,
-body.hide-vals .fatura-item-val,
-body.hide-vals .parcela-num-val,
-body.hide-vals .fin-val,
-body.hide-vals .detail-total-val,
-body.hide-vals .detail-item-val,
-body.hide-vals .stat-val,
-body.hide-vals .stat-box strong {
-  filter: blur(8px);
-  user-select: none;
-  transition: filter 0.25s;
-}
 .mv, .saldo-val, .saldo-val-mb, .tx-amount, .fatura-item-val,
 .parcela-num-val, .fin-val, .detail-total-val, .detail-item-val, .stat-val, .stat-box strong {
-  transition: filter 0.25s;
+  transition: none;
 }
 
 /* Lista receitas e contas */
@@ -716,8 +700,7 @@ body.hide-vals .stat-box strong {
           <div><div class="page-title" id="pc-page-title">Dashboard</div><div class="page-subtitle" id="pc-page-sub">Visão geral dos seus gastos</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-        <button id="btn-hide-vals-pc" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;touch-action:manipulation;">👁 Ocultar</button>
-        <div class="month-nav-pc" id="pc-monnav">
+          <div class="month-nav-pc" id="pc-monnav">
           <button onclick="changeMonth(-1)" title="Mês anterior">&#8592;</button>
           <select id="sel-mes" onchange="goToMonthYear()" style="background:#1e293b;border:none;color:#f1f5f9;font-size:14px;font-weight:500;outline:none;cursor:pointer;font-family:'Sora',sans-serif;padding:4px 2px;">
             <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
@@ -1008,7 +991,6 @@ body.hide-vals .stat-box strong {
   <div class="mb-topbar">
     <div class="mb-topbar-left"><div class="mb-logo">💰</div><div class="mb-title">Meu Bolso</div></div>
     <div class="mb-topbar-right">
-      <button id="btn-hide-vals-mb" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:6px;line-height:1;touch-action:manipulation;min-width:44px;min-height:44px;-webkit-tap-highlight-color:transparent;">👁</button>
       <div class="mb-sync-dot syncing" id="mb-sync-dot"></div>
       <button id="mb-sync-btn" onclick="mobileSync()" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">
         <span id="mb-sync-icon">🔄</span><span id="mb-sync-text">Sync</span>
@@ -1774,23 +1756,6 @@ function launchApp() {
     document.querySelectorAll('#app-pc .view').forEach(v=>{v.classList.remove('active');v.style.display='none';});
     const dv = document.getElementById('pc-view-dashboard'); dv.classList.add('active'); dv.style.display='block';
   }
-  applyHideValues();
-
-  // Bind direto nos botões de ocultar valores — garante funcionamento em iOS/Android
-  ['btn-hide-vals-pc','btn-hide-vals-mb'].forEach(function(id) {
-    var btn = document.getElementById(id);
-    if (!btn) return;
-    btn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleHideValues();
-    }, {passive: false, capture: false});
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      toggleHideValues();
-    });
-  });
-
   loadData(); // carrega tudo via fullSync (gastos, orçamentos, parcelas, receitas, contas)
   setTimeout(initContaPanel, 300);
 
@@ -2402,14 +2367,15 @@ function renderList() {
   const szCls = IS_MOBILE ? 'sz-mb' : 'sz-pc';
   const dateFn = IS_MOBILE ? fmtDateShort : fmtDate;
   el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" data-action="edit-gasto" data-id="${e.id}">✏️</button><button class="tx-del" data-action="del-gasto" data-id="${e.id}">✕</button></div></div>`; }).join('');
-  // Bind direto em cada botão — mais confiável no iOS
+  // Bind direto em cada botão — touchstart é o único evento iOS não bloqueia em scroll containers
   el.querySelectorAll('button[data-action]').forEach(function(btn) {
     var act = btn.dataset.action, id = btn.dataset.id;
-    btn.addEventListener('touchend', function(e) {
-      e.preventDefault(); e.stopPropagation();
+    btn.addEventListener('touchstart', function(e) {
+      e.preventDefault(); // impede o iOS de iniciar scroll E impede ghost click
+      e.stopPropagation();
       _dispatchAction(act, id, null);
     }, { passive: false });
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function(e) { // fallback desktop
       e.stopPropagation();
       _dispatchAction(act, id, null);
     });
@@ -4602,30 +4568,6 @@ function renderCartoes(platform) {
 }
 
 
-// ══════════════════════════════════════════
-// OCULTAR VALORES
-// ══════════════════════════════════════════
-let valuesHidden = localStorage.getItem('hide_vals') === '1';
-
-function applyHideValues() {
-  document.body.classList.toggle('hide-vals', valuesHidden);
-  const icon = valuesHidden ? '🙈' : '👁';
-  const label = valuesHidden ? ' Mostrar' : ' Ocultar';
-  const pcBtn = document.getElementById('btn-hide-vals-pc');
-  const mbBtn = document.getElementById('btn-hide-vals-mb');
-  if (pcBtn) pcBtn.innerHTML = icon + label;
-  if (mbBtn) mbBtn.textContent = icon;
-}
-
-let _hideValTs = 0;
-function toggleHideValues() {
-  var now = Date.now();
-  if (now - _hideValTs < 500) return;
-  _hideValTs = now;
-  valuesHidden = !valuesHidden;
-  localStorage.setItem('hide_vals', valuesHidden ? '1' : '0');
-  applyHideValues();
-}
 
 // ══════════════════════════════════════════
 // GLOBAL ACTION EVENTS — click + touchend para máxima compatibilidade iOS
@@ -4657,11 +4599,11 @@ document.addEventListener('click', function(e) {
   _dispatchAction(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
 }, true);
 
-// touchend — mais confiável no iOS Safari dentro de containers com scroll
-document.addEventListener('touchend', function(e) {
+// touchstart — único evento confiável no iOS Safari dentro de scroll containers
+document.addEventListener('touchstart', function(e) {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
-  e.preventDefault(); // evita o ghost-click posterior
+  e.preventDefault(); // impede scroll ao tocar botão e impede ghost click
   _dispatchAction(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
 }, { capture: true, passive: false });
 </script>

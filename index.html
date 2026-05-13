@@ -4174,7 +4174,8 @@ async function confirmarEdicao() {
 
 // ── EDITAR GASTO ──
 function editarGasto(id) {
-  const e = data.find(x=>x.id===id); if(!e) return;
+  const e = data.find(x=>x.id===id);
+  if(!e) { toast('⚠️ Gasto não encontrado'); return; }
   const catOpts = Object.keys(CATS).map(c=>`<option value="${c}"${c===e.category?' selected':''}>${CATS[c].icon} ${c}</option>`).join('');
   const payOpts = ['Pix','Dinheiro','Débito','Crédito'].map(p=>`<option value="${p}"${p===e.payment?' selected':''}>${{'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[p]} ${p}</option>`).join('');
   const cartaoOpts = '<option value="">— Sem cartão —</option>' + cartoes.map(c=>`<option value="${c.id}"${c.id===e.cartao_id?' selected':''}>${c.nome}</option>`).join('');
@@ -4508,26 +4509,42 @@ function renderCartoes(platform) {
 
 
 // ══════════════════════════════════════════
-// GLOBAL ACTION EVENTS — capture:true garante funcionamento no iOS
-// independente de scrollable containers ou stopPropagation
+// GLOBAL ACTION EVENTS — click + touchend para máxima compatibilidade iOS
 // ══════════════════════════════════════════
-(function initActionEvents() {
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const { action, id, pago } = btn.dataset;
+let _lastActionTs = 0;
+function _dispatchAction(action, id, pago) {
+  // Debounce para evitar dupla execução (click após touchend)
+  const now = Date.now();
+  if (now - _lastActionTs < 400) return;
+  _lastActionTs = now;
+  try {
     switch (action) {
-      case 'edit-gasto':    editarGasto(id);                      break;
-      case 'del-gasto':     delExpense(id);                       break;
-      case 'edit-parcela':  editarParcela(id);                    break;
-      case 'del-parcela':   deletarParcela(id);                   break;
-      case 'pagar-parcela': pagarParcela(id);                     break;
-      case 'edit-conta':    editarConta(id);                      break;
-      case 'del-conta':     delConta(id);                         break;
-      case 'toggle-conta':  toggleConta(id, pago === 'true');     break;
+      case 'edit-gasto':    editarGasto(id);                  break;
+      case 'del-gasto':     delExpense(id);                   break;
+      case 'edit-parcela':  editarParcela(id);                break;
+      case 'del-parcela':   deletarParcela(id);               break;
+      case 'pagar-parcela': pagarParcela(id);                 break;
+      case 'edit-conta':    editarConta(id);                  break;
+      case 'del-conta':     delConta(id);                     break;
+      case 'toggle-conta':  toggleConta(id, pago === 'true'); break;
     }
-  }, true); // capture:true — dispara antes de qualquer stopPropagation
-})();
+  } catch(err) { toast('❌ Erro: ' + err.message, false); }
+}
+
+// click — funciona no PC e como fallback
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  _dispatchAction(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
+}, true);
+
+// touchend — mais confiável no iOS Safari dentro de containers com scroll
+document.addEventListener('touchend', function(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  e.preventDefault(); // evita o ghost-click posterior
+  _dispatchAction(btn.dataset.action, btn.dataset.id, btn.dataset.pago);
+}, { capture: true, passive: false });
 </script>
 </body>
 </html>

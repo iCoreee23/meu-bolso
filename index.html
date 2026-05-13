@@ -2887,7 +2887,7 @@ function abrirModalParcela() {
   document.getElementById('mp-dia').value = '';
   document.getElementById('mp-cartao').value = '';
   document.getElementById('mp-preview').style.display='none';
-  document.getElementById('modal-parcela').classList.add('open');
+  const _mp = document.getElementById('modal-parcela'); _mp.dataset.openedAt = Date.now(); _mp.classList.add('open');
   setTimeout(()=>document.getElementById('mp-desc').focus(), 100);
 }
 
@@ -3177,7 +3177,7 @@ function abrirModalReceita() {
   document.getElementById('mr-desc').value = '';
   document.getElementById('mr-val').value = '';
   document.getElementById('mr-data').value = todayStr();
-  document.getElementById('modal-receita').classList.add('open');
+  const _mr = document.getElementById('modal-receita'); _mr.dataset.openedAt = Date.now(); _mr.classList.add('open');
   setTimeout(()=>document.getElementById('mr-desc').focus(),100);
 }
 async function salvarReceita() {
@@ -3212,7 +3212,7 @@ function abrirModalConta() {
   document.getElementById('mc-desc').value = '';
   document.getElementById('mc-val').value = '';
   document.getElementById('mc-data').value = todayStr();
-  document.getElementById('modal-conta').classList.add('open');
+  const _mc = document.getElementById('modal-conta'); _mc.dataset.openedAt = Date.now(); _mc.classList.add('open');
   setTimeout(()=>document.getElementById('mc-desc').focus(),100);
 }
 async function salvarConta() {
@@ -4155,7 +4155,9 @@ function abrirModalEdit(title, fieldsHtml, context) {
   editContext = context;
   document.getElementById('edit-title').textContent = title;
   document.getElementById('edit-fields').innerHTML = fieldsHtml;
-  document.getElementById('modal-edit').classList.add('open');
+  const el = document.getElementById('modal-edit');
+  el.dataset.openedAt = Date.now();
+  el.classList.add('open');
 }
 
 async function confirmarEdicao() {
@@ -4274,15 +4276,21 @@ async function salvarEdicaoParcela() {
   if(IS_MOBILE) renderParcelasMB(); else renderParcelasPC();
 }
 
-// Fecha modal de edição clicando fora
+// Fecha modal de edição clicando fora — ignora ghost-click do iOS
 document.getElementById('modal-edit').addEventListener('click', function(e) {
-  if(e.target===this) fecharModal('modal-edit');
+  if (e.target !== this) return;
+  const openedAt = parseInt(this.dataset.openedAt || 0);
+  if (Date.now() - openedAt < 350) return; // ghost-click logo após abrir → ignora
+  fecharModal('modal-edit');
 });
 
-// Fecha modais clicando fora
+// Fecha modais clicando fora — ignora ghost-click do iOS
 ['modal-receita','modal-conta','modal-parcela','modal-cartao'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', function(e) {
-    if (e.target === this) fecharModal(id);
+    if (e.target !== this) return;
+    const openedAt = parseInt(this.dataset.openedAt || 0);
+    if (Date.now() - openedAt < 350) return;
+    fecharModal(id);
   });
 });
 
@@ -4340,7 +4348,7 @@ function abrirModalCartao() {
   document.getElementById('cartao-fech-inp').value = '';
   document.getElementById('cartao-venc-inp').value = '';
   document.getElementById('cartao-limite-inp').value = '';
-  document.getElementById('modal-cartao').classList.add('open');
+  const _mca = document.getElementById('modal-cartao'); _mca.dataset.openedAt = Date.now(); _mca.classList.add('open');
 }
 
 async function salvarCartao() {

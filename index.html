@@ -716,7 +716,7 @@ body.hide-vals .stat-box strong {
           <div><div class="page-title" id="pc-page-title">Dashboard</div><div class="page-subtitle" id="pc-page-sub">Visão geral dos seus gastos</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-        <button id="btn-hide-vals-pc" data-action="toggle-hide-vals" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;touch-action:manipulation;">👁 Ocultar</button>
+        <button id="btn-hide-vals-pc" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;touch-action:manipulation;">👁 Ocultar</button>
         <div class="month-nav-pc" id="pc-monnav">
           <button onclick="changeMonth(-1)" title="Mês anterior">&#8592;</button>
           <select id="sel-mes" onchange="goToMonthYear()" style="background:#1e293b;border:none;color:#f1f5f9;font-size:14px;font-weight:500;outline:none;cursor:pointer;font-family:'Sora',sans-serif;padding:4px 2px;">
@@ -1008,7 +1008,7 @@ body.hide-vals .stat-box strong {
   <div class="mb-topbar">
     <div class="mb-topbar-left"><div class="mb-logo">💰</div><div class="mb-title">Meu Bolso</div></div>
     <div class="mb-topbar-right">
-      <button id="btn-hide-vals-mb" data-action="toggle-hide-vals" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;touch-action:manipulation;min-width:36px;min-height:36px;">👁</button>
+      <button id="btn-hide-vals-mb" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:6px;line-height:1;touch-action:manipulation;min-width:44px;min-height:44px;-webkit-tap-highlight-color:transparent;">👁</button>
       <div class="mb-sync-dot syncing" id="mb-sync-dot"></div>
       <button id="mb-sync-btn" onclick="mobileSync()" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">
         <span id="mb-sync-icon">🔄</span><span id="mb-sync-text">Sync</span>
@@ -1775,6 +1775,21 @@ function launchApp() {
   }
   applyHideValues();
 
+  // Bind direto nos botões de ocultar valores — garante funcionamento em iOS/Android
+  ['btn-hide-vals-pc','btn-hide-vals-mb'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleHideValues();
+    }, {passive: false, capture: false});
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleHideValues();
+    });
+  });
+
   loadData(); // carrega tudo via fullSync (gastos, orçamentos, parcelas, receitas, contas)
   setTimeout(initContaPanel, 300);
 
@@ -1898,7 +1913,7 @@ async function refreshUserMeta() {
 async function manualSync() {
   const btn = document.getElementById('btn-manual-sync');
   if (btn) { btn.textContent = '⏳ Sincronizando…'; btn.disabled = true; }
-  await fullSync();
+  await fullSync(true); // true = mostrar toast
   if (btn) { btn.textContent = '🔄 Sincronizar'; btn.disabled = false; }
 }
 
@@ -1908,20 +1923,20 @@ async function mobileSync() {
   const btn  = document.getElementById('mb-sync-btn');
   if (btn) { btn.disabled=true; if(icon) icon.textContent='⏳'; if(text) text.textContent='…'; }
   try {
-    await fullSync();
+    await fullSync(true); // true = mostrar toast
     // Reconecta WebSocket se estiver morto
     if (!window._wsConn || window._wsConn.readyState !== WebSocket.OPEN) {
       realtimeStarted = false;
       subscribeRealtime();
     }
-    toast('✅ Sincronizado!');
   } catch(e) {
     toast('❌ Erro ao sincronizar', false);
   }
   if (btn) { btn.disabled=false; if(icon) icon.textContent='🔄'; if(text) text.textContent='Sync'; }
 }
 
-async function fullSync() {
+async function fullSync(showToast) {
+  if (showToast === undefined) showToast = false; // silencioso por padrão (auto-sync)
   setSyncStatus('syncing', 'Sincronizando…');
   try {
     // Cada tabela tem seu próprio catch — uma falha não cancela as outras
@@ -1967,7 +1982,7 @@ async function fullSync() {
       if (active?.id==='mb-view-contas')   renderContas('mb');
       if (active?.id==='mb-view-balanco')  renderBalanco('mb');
     }
-    toast('✅ Tudo sincronizado!');
+    if (showToast) toast('✅ Tudo sincronizado!');
     refreshUserMeta().catch(()=>{}); // não bloqueia se falhar
   } catch(e) {
     console.error('fullSync error:', e);
@@ -1976,7 +1991,7 @@ async function fullSync() {
       : e.message?.includes('timeout') || e.name==='AbortError' ? 'Tempo esgotado — tente novamente'
       : 'Erro ao sincronizar';
     setSyncStatus('error', msg);
-    toast('❌ '+msg, false);
+    if (showToast) toast('❌ '+msg, false);
   }
 }
 
@@ -1994,7 +2009,19 @@ async function loadData() {
     }
     await fullSync();
     if (!realtimeStarted) { realtimeStarted = true; subscribeRealtime(); }
-  } catch(e) { setSyncStatus('error','Erro ao carregar — verifique sua conexão'); }
+    // Polling de fallback: re-sincroniza a cada 60s se WebSocket não estiver ativo
+    if (!window._autoSyncInterval) {
+      window._autoSyncInterval = setInterval(function() {
+        if (!window._wsConn || window._wsConn.readyState !== WebSocket.OPEN) {
+          fullSync().catch(()=>{});
+        }
+      }, 60000);
+    }
+  } catch(e) {
+    setSyncStatus('error','Erro ao carregar — verifique sua conexão');
+    // Tenta novamente após 5s em caso de falha inicial
+    setTimeout(function() { if (!realtimeStarted) loadData(); }, 5000);
+  }
 }
 
 function subscribeRealtime() {
@@ -4573,7 +4600,11 @@ function applyHideValues() {
   if (mbBtn) mbBtn.textContent = icon;
 }
 
+let _hideValTs = 0;
 function toggleHideValues() {
+  var now = Date.now();
+  if (now - _hideValTs < 500) return;
+  _hideValTs = now;
   valuesHidden = !valuesHidden;
   localStorage.setItem('hide_vals', valuesHidden ? '1' : '0');
   applyHideValues();
@@ -4597,8 +4628,7 @@ function _dispatchAction(action, id, pago) {
       case 'pagar-parcela': pagarParcela(id);                 break;
       case 'edit-conta':    editarConta(id);                  break;
       case 'del-conta':     delConta(id);                     break;
-      case 'toggle-conta':      toggleConta(id, pago === 'true'); break;
-      case 'toggle-hide-vals':  toggleHideValues();              break;
+      case 'toggle-conta':  toggleConta(id, pago === 'true'); break;
     }
   } catch(err) { toast('❌ Erro: ' + err.message, false); }
 }

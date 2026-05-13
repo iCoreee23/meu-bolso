@@ -2327,7 +2327,7 @@ function renderList() {
   if (!items.length) { el.innerHTML='<div class="empty-state"><div class="ei">🧾</div><p>Nenhum gasto encontrado</p></div>'; return; }
   const szCls = IS_MOBILE ? 'sz-mb' : 'sz-pc';
   const dateFn = IS_MOBILE ? fmtDateShort : fmtDate;
-  el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" onclick="event.stopPropagation();editarGasto('${e.id}')">✏️</button><button class="tx-del" onclick="event.stopPropagation();delExpense('${e.id}')">✕</button></div></div>`; }).join('');
+  el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" data-action="edit-gasto" data-id="${e.id}">✏️</button><button class="tx-del" data-action="del-gasto" data-id="${e.id}">✕</button></div></div>`; }).join('');
 }
 
 function renderSidebarCats(ct) {
@@ -2794,18 +2794,8 @@ function renderParcelasMB() {
   bindParcelaEvents(listEl);
 }
 
-// Event delegation para parcelas — compatível com iOS
-function bindParcelaEvents(container) {
-  container.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const {action, id} = btn.dataset;
-      if (action==='pagar-parcela')  pagarParcela(id);
-      else if (action==='edit-parcela')  editarParcela(id);
-      else if (action==='del-parcela')   deletarParcela(id);
-    });
-  });
-}
+// Event delegation gerenciado globalmente — ver initActionEvents()
+function bindParcelaEvents(container) { /* no-op — handled by global listener */ }
 
 function parcelaCardHTML(p, isMobile) {
   const vp = valorParcela(p);
@@ -3125,16 +3115,7 @@ function renderContas(pfx) {
         </div>
       </div>`;
     }).join('');
-    // Event delegation para iOS
-    listEl.querySelectorAll('[data-action]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        const {action, id, pago} = btn.dataset;
-        if (action==='edit-conta')   editarConta(id);
-        else if (action==='del-conta')    delConta(id);
-        else if (action==='toggle-conta') toggleConta(id, pago==='true');
-      });
-    });
+    // Event delegation gerenciado globalmente — ver initActionEvents()
   }
 
   // Stats — novo layout com stat-box
@@ -4525,6 +4506,28 @@ function renderCartoes(platform) {
   }).join('');
 }
 
+
+// ══════════════════════════════════════════
+// GLOBAL ACTION EVENTS — capture:true garante funcionamento no iOS
+// independente de scrollable containers ou stopPropagation
+// ══════════════════════════════════════════
+(function initActionEvents() {
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const { action, id, pago } = btn.dataset;
+    switch (action) {
+      case 'edit-gasto':    editarGasto(id);                      break;
+      case 'del-gasto':     delExpense(id);                       break;
+      case 'edit-parcela':  editarParcela(id);                    break;
+      case 'del-parcela':   deletarParcela(id);                   break;
+      case 'pagar-parcela': pagarParcela(id);                     break;
+      case 'edit-conta':    editarConta(id);                      break;
+      case 'del-conta':     delConta(id);                         break;
+      case 'toggle-conta':  toggleConta(id, pago === 'true');     break;
+    }
+  }, true); // capture:true — dispara antes de qualquer stopPropagation
+})();
 </script>
 </body>
 </html>

@@ -4158,6 +4158,8 @@ function abrirModalEdit(title, fieldsHtml, context) {
   const el = document.getElementById('modal-edit');
   el.dataset.openedAt = Date.now();
   el.classList.add('open');
+  // DEBUG — remover depois
+  alert('modal-edit aberto. display=' + getComputedStyle(el).display + ' z=' + getComputedStyle(el).zIndex);
 }
 
 async function confirmarEdicao() {

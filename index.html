@@ -228,7 +228,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .tx-meta{font-size:11px;color:#94a3b8;margin-top:2px;}
 .tx-right{display:flex;align-items:center;gap:2px;flex-shrink:0;}
 .tx-amount{font-size:13px;font-weight:600;color:#f87171;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
-.tx-del{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;}
+.tx-del{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(239,68,68,0.2);}
 .tx-del:hover{background:rgba(220,38,38,0.12);color:#f87171;}
 .empty-state{text-align:center;padding:2.5rem 1rem;color:#64748b;}
 .empty-state .ei{font-size:36px;margin-bottom:10px;}
@@ -433,7 +433,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .btn-fin-del:hover{color:#f87171;background:rgba(239,68,68,0.1);}
 .btn-fin-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;flex-shrink:0;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;}
 .btn-fin-edit:hover{color:#60a5fa;background:rgba(96,165,250,0.1);}
-.btn-tx-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;}
+.btn-tx-edit{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:6px;border-radius:6px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(96,165,250,0.2);}
 .btn-tx-edit:hover{color:#60a5fa;background:rgba(96,165,250,0.1);}
 
 /* Vencimento badge — agora dentro do fin-meta */
@@ -2328,6 +2328,18 @@ function renderList() {
   const szCls = IS_MOBILE ? 'sz-mb' : 'sz-pc';
   const dateFn = IS_MOBILE ? fmtDateShort : fmtDate;
   el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" data-action="edit-gasto" data-id="${e.id}">✏️</button><button class="tx-del" data-action="del-gasto" data-id="${e.id}">✕</button></div></div>`; }).join('');
+  // Bind direto em cada botão — mais confiável no iOS
+  el.querySelectorAll('button[data-action]').forEach(function(btn) {
+    var act = btn.dataset.action, id = btn.dataset.id;
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      _dispatchAction(act, id, null);
+    }, { passive: false });
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      _dispatchAction(act, id, null);
+    });
+  });
 }
 
 function renderSidebarCats(ct) {

@@ -1365,7 +1365,6 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 const SB_URL = 'https://cnnoclupcdduejzoltit.supabase.co';   // ex: https://xyzabc.supabase.co
 const SB_KEY = 'sb_publishable_WbxHFl2HYKgFWtinLjrxtQ_m2v-aYFW'; // ex: eyJhbGciOiJIUzI1NiIs...
 
-
 // ══════════════════════════════════════════
 // DETECÇÃO DE DISPOSITIVO
 // ══════════════════════════════════════════
@@ -4117,12 +4116,227 @@ document.getElementById('modal-edit').addEventListener('click', function(e) {
   if(e.target===this) fecharModal('modal-edit');
 });
 
-// Fecha modais clicando fora
-['modal-receita','modal-conta','modal-parcela'].forEach(id => {
-  document.getElementById(id)?.addEventListener('click', function(e) {
-    if (e.target === this) fecharModal(id);
+// ══════════════════════════════════════════
+// CARTÕES DE CRÉDITO
+// ══════════════════════════════════════════
+
+function getFaturaKey(dateStr, diaFechamento) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  if (d <= diaFechamento) {
+    return y + '-' + String(m).padStart(2,'0');
+  } else {
+    const next = new Date(y, m, 1);
+    return next.getFullYear() + '-' + String(next.getMonth()+1).padStart(2,'0');
+  }
+}
+
+function getFaturaVencimento(faturaKey, diaVencimento) {
+  const [y, m] = faturaKey.split('-').map(Number);
+  const next = new Date(y, m, 1);
+  const dy = next.getFullYear(), dm = next.getMonth()+1;
+  const maxDay = new Date(dy, dm, 0).getDate();
+  const day = Math.min(diaVencimento, maxDay);
+  return dy + '-' + String(dm).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+}
+
+function fmtFaturaKey(key) {
+  const [y, m] = key.split('-').map(Number);
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  return meses[m-1] + ' ' + y;
+}
+
+function onPayChange(src) {
+  const pay = document.getElementById(src+'-pay')?.value;
+  const wrapper = document.getElementById(src+'-cartao-wrapper');
+  if (wrapper) wrapper.classList.toggle('show', pay === 'Crédito');
+}
+
+function populateCartaoSelects() {
+  ['pc-cartao','mb-cartao','mp-cartao'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    const nenhum = id==='mp-cartao' ? '— Nenhum —' : '— Sem cartão vinculado —';
+    sel.innerHTML = `<option value="">${nenhum}</option>` +
+      cartoes.map(c => `<option value="${c.id}"${c.id===cur?' selected':''}>${c.nome}</option>`).join('');
   });
+}
+
+function abrirModalCartao() {
+  document.getElementById('cartao-nome-inp').value = '';
+  document.getElementById('cartao-fech-inp').value = '';
+  document.getElementById('cartao-venc-inp').value = '';
+  document.getElementById('cartao-limite-inp').value = '';
+  const el = document.getElementById('modal-cartao');
+  el.dataset.openedAt = Date.now();
+  el.classList.add('open');
+}
+
+async function salvarCartao() {
+  const nome = document.getElementById('cartao-nome-inp').value.trim();
+  const fech = parseInt(document.getElementById('cartao-fech-inp').value);
+  const venc = parseInt(document.getElementById('cartao-venc-inp').value);
+  const lim  = parseFloat(document.getElementById('cartao-limite-inp').value) || null;
+  if (!nome || !fech || !venc || fech<1||fech>31 || venc<1||venc>31) {
+    toast('⚠️ Preencha nome, dia de fechamento e vencimento', false); return;
+  }
+  try {
+    const r = await sbFetch('cartoes', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({nome, dia_fechamento:fech, dia_vencimento:venc, limite:lim})});
+    const ins = Array.isArray(r)?r[0]:r;
+    if (ins) cartoes.unshift(ins);
+    populateCartaoSelects();
+    fecharModal('modal-cartao');
+    renderCartoes('pc'); renderCartoes('mb');
+    toast('✅ Cartão cadastrado!');
+  } catch(e) { toast('❌ '+e.message, false); }
+}
+
+async function delCartao(id) {
+  if (!confirm('Remover este cartão? Os gastos vinculados continuarão, mas sem o cartão.')) return;
+  try {
+    await sbFetch('gastos?cartao_id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({cartao_id:null})}).catch(()=>{});
+    data = data.map(e => e.cartao_id===id ? {...e, cartao_id:null} : e);
+    await sbFetch('cartoes?id=eq.'+id, {method:'DELETE'});
+    cartoes = cartoes.filter(c=>c.id!==id);
+    populateCartaoSelects();
+    renderCartoes('pc'); renderCartoes('mb');
+    toast('🗑 Cartão removido');
+  } catch(e) { toast('❌ Erro ao remover', false); }
+}
+
+async function fecharFatura(cartaoId, faturaKey) {
+  const cartao = cartoes.find(c=>c.id===cartaoId);
+  if (!cartao) return;
+  const gastosFatura = data.filter(e => e.payment==='Crédito' && e.cartao_id===cartaoId && getFaturaKey(e.date, cartao.dia_fechamento)===faturaKey);
+  const total = gastosFatura.reduce((s,e)=>s+e.amount, 0);
+  if (total === 0) { toast('⚠️ Fatura vazia', false); return; }
+  const venc = getFaturaVencimento(faturaKey, cartao.dia_vencimento);
+  const desc = 'Fatura ' + cartao.nome + ' · ' + fmtFaturaKey(faturaKey);
+  if (!confirm(`Gerar Conta a Pagar:\n${desc}\nValor: ${fmt(total)}\nVencimento: ${fmtDate(venc)}`)) return;
+  try {
+    const r = await sbFetch('contas', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({descricao:desc, valor:total, categoria:'Cartão de Crédito', vencimento:venc, pago:false})});
+    const ins = Array.isArray(r)?r[0]:r;
+    if (ins) contas.push(ins);
+    render();
+    toast('✅ Conta a Pagar criada!');
+  } catch(e) { toast('❌ '+e.message, false); }
+}
+
+function renderCartoes(platform) {
+  const listId = platform==='pc' ? 'pc-cartoes-list' : 'mb-cartoes-list';
+  const el = document.getElementById(listId);
+  if (!el) return;
+
+  // Parcelas sem cartão vinculado
+  const parcelasAtivas = parcelas.filter(p => restantes(p) > 0 && !p.cartao_id);
+  const parcelasSection = parcelasAtivas.length === 0 ? '' : `
+    <div class="cartao-card" style="margin-bottom:20px;">
+      <div class="cartao-nome" style="margin-bottom:12px;">📦 Parcelas sem cartão</div>
+      ${parcelasAtivas.map(p => {
+        const vpm = valorParcela(p);
+        const pct = pctPago(p);
+        const dias = diasParaVencer(p);
+        const alerta = dias <= 5;
+        return `<div class="fatura-item" style="flex-direction:column;gap:6px;align-items:stretch;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="fatura-item-desc">${p.descricao}</div>
+            <div class="fatura-item-val">${fmt(vpm)}<span style="font-size:10px;color:#64748b;font-weight:400;">/mês</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:${alerta?'#f87171':'#64748b'};">
+            <span>${p.parcelas_pagas}/${p.num_parcelas} pagas · ${alerta?'vence em '+dias+'d':'vence dia '+p.dia_vencimento}</span>
+            <span>${fmt(totalAPagar(p))} restante</span>
+          </div>
+          <div style="height:4px;background:#334155;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${pct===100?'#22c55e':alerta?'#f87171':'#60a5fa'};border-radius:4px;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  if (cartoes.length === 0) {
+    el.innerHTML = parcelasSection + `<button class="btn-add-cartao" onclick="abrirModalCartao()">＋ Cadastrar meu primeiro cartão</button>`;
+    return;
+  }
+
+  el.innerHTML = parcelasSection + cartoes.map(cartao => {
+    const gastosDoCarta = data.filter(e => e.payment==='Crédito' && e.cartao_id===cartao.id);
+    const faturas = {};
+    gastosDoCarta.forEach(e => {
+      const fk = getFaturaKey(e.date, cartao.dia_fechamento);
+      if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
+      faturas[fk].gastos.push(e);
+    });
+    parcelas.filter(p => p.cartao_id===cartao.id && restantes(p)>0).forEach(p => {
+      const proxVenc = proximoVencimento(p);
+      const dateStr = proxVenc.getFullYear()+'-'+String(proxVenc.getMonth()+1).padStart(2,'0')+'-'+String(proxVenc.getDate()).padStart(2,'0');
+      const fk = getFaturaKey(dateStr, cartao.dia_fechamento);
+      if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
+      faturas[fk].parcItems.push({ desc:p.descricao, num:p.parcelas_pagas+1, total:p.num_parcelas, val:valorParcela(p), date:dateStr });
+    });
+
+    const faturaKeys = Object.keys(faturas).sort().reverse();
+    const faturasHTML = faturaKeys.length === 0
+      ? `<div class="fatura-vazia">Nenhum gasto com crédito vinculado a este cartão.</div>`
+      : faturaKeys.map(fk => {
+          const { gastos:items, parcItems } = faturas[fk];
+          const totalGastos = items.reduce((s,e)=>s+e.amount,0);
+          const totalParc   = parcItems.reduce((s,p)=>s+p.val,0);
+          const total = totalGastos + totalParc;
+          const venc  = getFaturaVencimento(fk, cartao.dia_vencimento);
+          const aberta = fk >= monthKey(new Date());
+          return `
+          <div class="fatura-grupo">
+            <div class="fatura-titulo">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <h4>Fatura ${fmtFaturaKey(fk)}</h4>
+                <span class="fatura-badge${aberta?'':' fechada'}">${aberta?'ABERTA':'FECHADA'}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span class="fatura-total">${fmt(total)}</span>
+                <button class="btn-fechar-fatura" onclick="fecharFatura('${cartao.id}','${fk}')">📋 Gerar conta</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#64748b;margin-bottom:8px;">Vencimento: ${fmtDate(venc)}</div>
+            ${items.map(e=>`
+              <div class="fatura-item">
+                <div class="fatura-item-info">
+                  <div class="fatura-item-desc">${e.description}</div>
+                  <div class="fatura-item-meta">${fmtDate(e.date)} · ${e.category}</div>
+                </div>
+                <div class="fatura-item-val">${fmt(e.amount)}</div>
+              </div>`).join('')}
+            ${parcItems.map(p=>`
+              <div class="fatura-item" style="border-left:2px solid #60a5fa;">
+                <div class="fatura-item-info">
+                  <div class="fatura-item-desc">${p.desc} <span style="color:#60a5fa;font-size:11px;">${p.num}/${p.total}</span></div>
+                  <div class="fatura-item-meta">📦 Parcela · ${fmtDate(p.date)}</div>
+                </div>
+                <div class="fatura-item-val" style="color:#60a5fa;">${fmt(p.val)}</div>
+              </div>`).join('')}
+          </div>`;
+        }).join('');
+
+    return `
+    <div class="cartao-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+        <div class="cartao-nome">🏦 ${cartao.nome}</div>
+        <button onclick="delCartao('${cartao.id}')" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:18px;padding:4px 8px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;" title="Remover cartão">✕</button>
+      </div>
+      <div class="cartao-info">
+        <span>✂️ Fecha dia ${cartao.dia_fechamento}</span>
+        <span>📅 Vence dia ${cartao.dia_vencimento}</span>
+        ${cartao.limite?`<span>💰 Limite ${fmt(cartao.limite)}</span>`:''}
+      </div>
+      ${faturasHTML}
+    </div>`;
+  }).join('');
+}
+
+// Fecha modal-cartao clicando fora
+document.getElementById('modal-cartao')?.addEventListener('click', function(e) {
+  if (e.target === this) fecharModal('modal-cartao');
 });
+
 
 // ══════════════════════════════════════════
 // HANDLER GLOBAL DE AÇÕES — único listener, sem duplicações

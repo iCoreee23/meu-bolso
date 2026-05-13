@@ -132,7 +132,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .mb-user-chip{display:flex;align-items:center;gap:6px;background:#1e293b;border:1px solid rgba(255,255,255,0.07);border-radius:100px;padding:4px 10px 4px 5px;cursor:pointer;}
 .mb-user-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#059669);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.4);flex-shrink:0;overflow:hidden;}
 .mb-user-name{font-size:11px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.mb-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.mb-content{flex:1;overflow-y:auto;overscroll-behavior:contain;}
 .mb-content-inner{padding:14px 14px 20px;}
 .bottom-nav{background:#1e293b;border-top:1px solid rgba(255,255,255,0.07);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);flex-shrink:0;overflow-x:auto;}
 .bottom-nav::-webkit-scrollbar{display:none;}
@@ -346,7 +346,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .parcela-venc-alert{color:#f87171;font-weight:600;}
 
 /* Modal de nova parcela */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9998;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);-webkit-overflow-scrolling:touch;overflow-y:auto;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9998;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);overflow-y:auto;}
 .modal-overlay.open{display:flex;animation:fadeIn 0.2s ease;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 .modal-box{background:#1e293b;border:1px solid rgba(255,255,255,0.13);border-radius:22px;padding:1.5rem;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;animation:slideUp 0.25s ease;-webkit-overflow-scrolling:touch;position:relative;}
@@ -4158,8 +4158,6 @@ function abrirModalEdit(title, fieldsHtml, context) {
   const el = document.getElementById('modal-edit');
   el.dataset.openedAt = Date.now();
   el.classList.add('open');
-  // DEBUG — remover depois
-  alert('modal-edit aberto. display=' + getComputedStyle(el).display + ' z=' + getComputedStyle(el).zIndex);
 }
 
 async function confirmarEdicao() {

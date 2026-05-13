@@ -411,6 +411,27 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .saldo-item-mb label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
 .saldo-val-mb{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
 
+/* ── Ocultar valores ── */
+body.hide-vals .mv,
+body.hide-vals .saldo-val,
+body.hide-vals .saldo-val-mb,
+body.hide-vals .tx-amount,
+body.hide-vals .fatura-item-val,
+body.hide-vals .parcela-num-val,
+body.hide-vals .fin-val,
+body.hide-vals .detail-total-val,
+body.hide-vals .detail-item-val,
+body.hide-vals .stat-val,
+body.hide-vals .stat-box strong {
+  filter: blur(8px);
+  user-select: none;
+  transition: filter 0.25s;
+}
+.mv, .saldo-val, .saldo-val-mb, .tx-amount, .fatura-item-val,
+.parcela-num-val, .fin-val, .detail-total-val, .detail-item-val, .stat-val, .stat-box strong {
+  transition: filter 0.25s;
+}
+
 /* Lista receitas e contas */
 .fin-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto;padding-right:2px;}
 .fin-list::-webkit-scrollbar{width:4px;}
@@ -694,6 +715,8 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <button class="menu-toggle" onclick="document.getElementById('pc-sidebar').classList.toggle('open')">☰</button>
           <div><div class="page-title" id="pc-page-title">Dashboard</div><div class="page-subtitle" id="pc-page-sub">Visão geral dos seus gastos</div></div>
         </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+        <button id="btn-hide-vals-pc" onclick="toggleHideValues()" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:5px 12px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">👁 Ocultar</button>
         <div class="month-nav-pc" id="pc-monnav">
           <button onclick="changeMonth(-1)" title="Mês anterior">&#8592;</button>
           <select id="sel-mes" onchange="goToMonthYear()" style="background:#1e293b;border:none;color:#f1f5f9;font-size:14px;font-weight:500;outline:none;cursor:pointer;font-family:'Sora',sans-serif;padding:4px 2px;">
@@ -705,6 +728,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <select id="sel-ano" onchange="goToMonthYear()" style="background:#1e293b;border:none;color:#f1f5f9;font-size:14px;font-weight:500;outline:none;cursor:pointer;font-family:'Sora',sans-serif;padding:4px 2px;">
           </select>
           <button onclick="changeMonth(1)" title="Próximo mês">&#8594;</button>
+        </div>
         </div>
       </div>
       <!-- PC DASHBOARD -->
@@ -984,6 +1008,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
   <div class="mb-topbar">
     <div class="mb-topbar-left"><div class="mb-logo">💰</div><div class="mb-title">Meu Bolso</div></div>
     <div class="mb-topbar-right">
+      <button id="btn-hide-vals-mb" onclick="toggleHideValues()" title="Ocultar valores" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;">👁</button>
       <div class="mb-sync-dot syncing" id="mb-sync-dot"></div>
       <button id="mb-sync-btn" onclick="mobileSync()" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">
         <span id="mb-sync-icon">🔄</span><span id="mb-sync-text">Sync</span>
@@ -1748,6 +1773,7 @@ function launchApp() {
     document.querySelectorAll('#app-pc .view').forEach(v=>{v.classList.remove('active');v.style.display='none';});
     const dv = document.getElementById('pc-view-dashboard'); dv.classList.add('active'); dv.style.display='block';
   }
+  applyHideValues();
 
   loadData(); // carrega tudo via fullSync (gastos, orçamentos, parcelas, receitas, contas)
   setTimeout(initContaPanel, 300);
@@ -4531,6 +4557,27 @@ function renderCartoes(platform) {
   }).join('');
 }
 
+
+// ══════════════════════════════════════════
+// OCULTAR VALORES
+// ══════════════════════════════════════════
+let valuesHidden = localStorage.getItem('hide_vals') === '1';
+
+function applyHideValues() {
+  document.body.classList.toggle('hide-vals', valuesHidden);
+  const icon = valuesHidden ? '🙈' : '👁';
+  const label = valuesHidden ? ' Mostrar' : ' Ocultar';
+  const pcBtn = document.getElementById('btn-hide-vals-pc');
+  const mbBtn = document.getElementById('btn-hide-vals-mb');
+  if (pcBtn) pcBtn.innerHTML = icon + label;
+  if (mbBtn) mbBtn.textContent = icon;
+}
+
+function toggleHideValues() {
+  valuesHidden = !valuesHidden;
+  localStorage.setItem('hide_vals', valuesHidden ? '1' : '0');
+  applyHideValues();
+}
 
 // ══════════════════════════════════════════
 // GLOBAL ACTION EVENTS — click + touchend para máxima compatibilidade iOS

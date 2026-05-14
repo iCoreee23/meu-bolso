@@ -622,6 +622,57 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .cartao-select-wrapper.show{display:block;}
 .fatura-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);}
 .fatura-badge.fechada{background:rgba(34,197,94,0.1);color:#22c55e;border-color:rgba(34,197,94,0.3);}
+/* ════ COFRE ════ */
+.cofre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:1.5rem;}
+.cofre-card{background:#1e293b;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:1.5rem;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.cofre-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.cofre-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0;}
+.cofre-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.cofre-emoji{font-size:32px;line-height:1;}
+.cofre-nome{font-size:16px;font-weight:700;color:#f1f5f9;margin-top:4px;}
+.cofre-actions{display:flex;gap:4px;}
+.cofre-pct{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+.cofre-valores{display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin-bottom:10px;}
+.cofre-bar-track{height:10px;background:#334155;border-radius:5px;overflow:hidden;margin-bottom:14px;}
+.cofre-bar-fill{height:100%;border-radius:5px;transition:width 0.6s ease;}
+.cofre-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+.cofre-stat{background:#0f172a;border-radius:10px;padding:10px 12px;text-align:center;}
+.cofre-stat label{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:4px;}
+.cofre-stat strong{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.btn-depositar{width:100%;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.15s;touch-action:manipulation;}
+.btn-depositar:active{background:rgba(34,197,94,0.25);}
+.cofre-hist{margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;}
+.cofre-hist-title{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.cofre-dep-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+.cofre-dep-item:last-child{border-bottom:none;}
+.cofre-concluido{background:linear-gradient(135deg,rgba(34,197,94,0.1),rgba(16,185,129,0.05));border-color:rgba(34,197,94,0.3);}
+/* ════ ASSISTENTE IA ════ */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 140px);background:#1e293b;border:1px solid rgba(255,255,255,0.07);border-radius:20px;overflow:hidden;}
+.chat-header{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:12px;flex-shrink:0;background:#1e293b;}
+.chat-av{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.chat-info strong{font-size:14px;font-weight:600;color:#f1f5f9;display:block;}
+.chat-info span{font-size:12px;color:#22c55e;}
+.chat-messages{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;max-width:85%;}
+.chat-msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.chat-msg.user .chat-bubble{background:linear-gradient(135deg,#22c55e,#16a34a);color:#052e16;border-radius:18px 18px 4px 18px;}
+.chat-msg.bot .chat-bubble{background:#0f172a;color:#f1f5f9;border-radius:18px 18px 18px 4px;border:1px solid rgba(255,255,255,0.06);}
+.chat-bubble{padding:10px 14px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;}
+.chat-bubble.typing{color:#64748b;}
+.chat-msg-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.chat-input-wrap{padding:1rem;border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;background:#1e293b;}
+.chat-input{flex:1;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;font-size:14px;color:#f1f5f9;font-family:'Sora',sans-serif;outline:none;resize:none;max-height:100px;min-height:42px;line-height:1.5;transition:border-color 0.15s;}
+.chat-input:focus{border-color:#6366f1;}
+.chat-input::placeholder{color:#64748b;}
+.btn-chat-send{background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0;transition:all 0.15s;touch-action:manipulation;}
+.btn-chat-send:hover{opacity:0.85;}
+.btn-chat-send:active{transform:scale(0.92);}
+.btn-chat-send:disabled{opacity:0.4;cursor:not-allowed;}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 1.25rem 0.75rem;}
+.chat-sug{background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 14px;font-size:12px;color:#94a3b8;cursor:pointer;transition:all 0.15s;font-family:'Sora',sans-serif;touch-action:manipulation;}
+.chat-sug:hover,.chat-sug:active{background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.3);color:#a5b4fc;}
 </style>
 </head>
 <body>
@@ -695,8 +746,8 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <div class="nav-item active" onclick="pcView('dashboard',this)"><span class="icon">📊</span>Dashboard</div>
       <div class="nav-item" onclick="pcView('receitas',this)"><span class="icon">💵</span>Entradas</div>
       <div class="nav-item" onclick="pcView('contas',this)"><span class="icon">📋</span>Contas a Pagar</div>
-      <div class="nav-item" onclick="pcView('parcelas',this)"><span class="icon">💳</span>Parcelas</div>
-      <div class="nav-item" onclick="pcView('cartoes',this)"><span class="icon">🏦</span>Cartão de Crédito</div>
+      <div class="nav-item" onclick="pcView('parcelas',this)"><span class="icon">📦</span>Parcelas</div>
+      <div class="nav-item" onclick="pcView('cartoes',this)"><span class="icon">💳</span>Cartão de Crédito</div>
       <div class="nav-item" onclick="pcView('budget',this)"><span class="icon">🎯</span>Renda Mensal</div>
       <div class="nav-item" onclick="pcView('balanco',this)"><span class="icon">📅</span>Balanço Anual</div>
       <div class="nav-item" onclick="pcView('export',this)"><span class="icon">📤</span>Exportar</div>
@@ -734,6 +785,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <div class="metric-card" style="--mc:#60a5fa;"><label>Gastos hoje</label><div class="mv lg" id="pc-m-today">R$ 0,00</div><div class="msub" id="pc-m-tcount">0 transações</div></div>
           <div class="metric-card" style="--mc:#a78bfa;"><label>Maior categoria</label><div class="mv lg" id="pc-m-top" style="font-size:16px;">—</div><div class="msub" id="pc-m-topval">—</div></div>
           <div class="metric-card" style="--mc:#f59e0b;cursor:pointer;" onclick="pcView('cartoes',document.querySelector('.nav-item[onclick*=cartoes]'))"><label>💳 Cartão de Crédito</label><div class="mv lg" id="pc-m-credito" style="color:#f59e0b;">R$ 0,00</div><div class="msub" id="pc-m-credito-sub">este mês</div></div>
+          <div class="metric-card" style="--mc:#2dd4bf;cursor:pointer;" onclick="pcView('cofre',null)"><label>🏦 Cofre</label><div class="mv lg" id="pc-m-cofre" style="color:#2dd4bf;">R$ 0,00</div><div class="msub" id="pc-m-cofre-sub">0 cofres</div></div>
         </div>
         <!-- Card de saldo (entradas vs gastos) -->
         <div class="saldo-card" id="pc-saldo-card">
@@ -748,7 +800,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <!-- Resumo parcelas no dashboard -->
         <div class="parcelas-dash" id="pc-parcelas-dash" style="display:none;">
           <div class="parcelas-dash-header">
-            <span class="parcelas-dash-title">💳 Parcelas em andamento</span>
+            <span class="parcelas-dash-title">📦 Parcelas em andamento</span>
             <span class="parcelas-dash-total" id="pc-parcelas-mes-total">—</span>
           </div>
           <div class="parcelas-dash-list" id="pc-parcelas-dash-list"></div>
@@ -964,7 +1016,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <!-- PC PARCELAS -->
       <div class="view" id="pc-view-parcelas">
         <div class="parcelas-header">
-          <h2>💳 Parcelas do Cartão</h2>
+          <h2>📦 Parcelas</h2>
           <button class="btn-nova-parcela" onclick="abrirModalParcela()">＋ Nova compra parcelada</button>
         </div>
         <div id="pc-parcelas-alertas"></div>
@@ -972,11 +1024,30 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       </div>
       <!-- PC CARTOES -->
       <div class="view" id="pc-view-cartoes">
+        <div id="pc-cartoes-list"></div>
+      </div>
+      <!-- PC COFRE -->
+      <div class="view" id="pc-view-cofre">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;">
-          <div></div>
-          <button class="btn-nova-parcela" onclick="abrirModalCartao()">＋ Cadastrar cartão</button>
+          <div><div class="page-title">🏦 Cofre</div><div class="page-subtitle">Guarde dinheiro com metas</div></div>
+          <button class="btn-nova-parcela" onclick="abrirModalCofre()">＋ Novo cofre</button>
         </div>
-        <div class="cartao-grid" id="pc-cartoes-list"></div>
+        <div class="cofre-grid" id="pc-cofre-grid"></div>
+      </div>
+      <!-- PC ASSISTENTE -->
+      <div class="view" id="pc-view-assistente">
+        <div class="chat-wrap">
+          <div class="chat-header">
+            <div class="chat-av">🤖</div>
+            <div class="chat-info"><strong>Assessor Financeiro</strong><span>● Online · IA</span></div>
+          </div>
+          <div class="chat-messages" id="pc-chat-messages"></div>
+          <div class="chat-suggestions" id="pc-chat-suggestions"></div>
+          <div class="chat-input-wrap">
+            <textarea class="chat-input" id="pc-chat-input" placeholder="Pergunte algo sobre suas finanças…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarChat('pc');}"></textarea>
+            <button class="btn-chat-send" id="pc-chat-send" onclick="enviarChat('pc')">➤</button>
+          </div>
+        </div>
       </div>
       <!-- PC EXPORT -->
       <div class="view" id="pc-view-export">
@@ -1044,13 +1115,14 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           <div class="metric-card" style="--mc:#60a5fa;"><label>Hoje</label><div class="mv sm" id="mb-m-today">R$ 0,00</div><div class="msub" id="mb-m-tcount">0 transações</div></div>
           <div class="metric-card" style="--mc:#a78bfa;"><label>Maior gasto</label><div class="mv sm" id="mb-m-top" style="font-size:12px;">—</div><div class="msub" id="mb-m-topval">—</div></div>
           <div class="metric-card" style="--mc:#f59e0b;cursor:pointer;" onclick="mbView('cartoes')"><label>💳 Crédito</label><div class="mv sm" id="mb-m-credito" style="color:#f59e0b;">R$ 0,00</div><div class="msub" id="mb-m-credito-sub">este mês</div></div>
+          <div class="metric-card" style="--mc:#2dd4bf;cursor:pointer;" onclick="mbView('cofre')"><label>🏦 Cofre</label><div class="mv sm" id="mb-m-cofre" style="color:#2dd4bf;">R$ 0,00</div><div class="msub" id="mb-m-cofre-sub">0 cofres</div></div>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Gastos diários</span><span class="card-sub" id="mb-chart-period">—</span></div><div class="chart-wrap-mb"><canvas id="mb-chart"></canvas></div></div>
         <div class="card"><div class="card-header"><span class="card-title">Por categoria</span><span class="card-sub" id="mb-cat-total">—</span></div><div class="cat-list" id="mb-cat-bars"></div></div>
         <!-- Resumo parcelas dashboard mobile -->
         <div class="parcelas-dash" id="mb-parcelas-dash" style="display:none;">
           <div class="parcelas-dash-header">
-            <span class="parcelas-dash-title">💳 Parcelas em andamento</span>
+            <span class="parcelas-dash-title">📦 Parcelas em andamento</span>
             <span class="parcelas-dash-total" id="mb-parcelas-mes-total">—</span>
           </div>
           <div class="parcelas-dash-list" id="mb-parcelas-dash-list"></div>
@@ -1102,7 +1174,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <!-- MB PARCELAS -->
       <div class="view" id="mb-view-parcelas">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-          <span style="font-size:15px;font-weight:600;">💳 Parcelas</span>
+          <span style="font-size:15px;font-weight:600;">📦 Parcelas</span>
           <button class="btn-nova-parcela" style="font-size:12px;padding:8px 14px;" onclick="abrirModalParcela()">＋ Nova</button>
         </div>
         <div id="mb-parcelas-alertas"></div>
@@ -1173,11 +1245,30 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       </div>
       <!-- MB CARTOES -->
       <div class="view" id="mb-view-cartoes">
+        <div id="mb-cartoes-list"></div>
+      </div>
+      <!-- MB COFRE -->
+      <div class="view" id="mb-view-cofre">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <span style="font-size:15px;font-weight:600;">🏦 Cartão de Crédito</span>
-          <button class="btn-nova-parcela" style="font-size:12px;padding:8px 14px;" onclick="abrirModalCartao()">＋ Cartão</button>
+          <span style="font-size:15px;font-weight:600;">🏦 Cofre</span>
+          <button class="btn-nova-parcela" style="font-size:12px;padding:8px 14px;" onclick="abrirModalCofre()">＋ Novo</button>
         </div>
-        <div id="mb-cartoes-list" style="display:flex;flex-direction:column;gap:16px;"></div>
+        <div style="display:flex;flex-direction:column;gap:14px;" id="mb-cofre-list"></div>
+      </div>
+      <!-- MB ASSISTENTE -->
+      <div class="view" id="mb-view-assistente" style="display:flex;flex-direction:column;height:calc(100dvh - 60px);">
+        <div class="chat-wrap" style="height:100%;border-radius:0;border:none;">
+          <div class="chat-header">
+            <div class="chat-av" style="width:34px;height:34px;font-size:16px;">🤖</div>
+            <div class="chat-info"><strong>Assessor Financeiro</strong><span>● Online · IA</span></div>
+          </div>
+          <div class="chat-messages" id="mb-chat-messages"></div>
+          <div class="chat-suggestions" id="mb-chat-suggestions"></div>
+          <div class="chat-input-wrap">
+            <textarea class="chat-input" id="mb-chat-input" placeholder="Pergunte sobre suas finanças…" rows="1" style="font-size:16px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarChat('mb');}"></textarea>
+            <button class="btn-chat-send" id="mb-chat-send" onclick="enviarChat('mb')">➤</button>
+          </div>
+        </div>
       </div>
       <!-- MB SETTINGS -->
       <div class="view" id="mb-view-settings">
@@ -1255,7 +1346,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
     <button class="nav-btn" id="mb-nav-receitas" onclick="mbView('receitas')"><span class="nb-icon">💵</span><span>Entradas</span></button>
     <button class="nav-btn" id="mb-nav-contas" onclick="mbView('contas')"><span class="nb-icon">📋</span><span>Contas</span></button>
     <button class="nav-btn" id="mb-nav-parcelas" onclick="mbView('parcelas')"><span class="nb-icon">💳</span><span>Parcelas</span></button>
-    <button class="nav-btn" id="mb-nav-cartoes" onclick="mbView('cartoes')"><span class="nb-icon">🏦</span><span>Cartão</span></button>
+    <button class="nav-btn" id="mb-nav-cartoes" onclick="mbView('cartoes')"><span class="nb-icon">💳</span><span>Cartão</span></button>
     <button class="nav-btn" id="mb-nav-budget" onclick="mbView('budget')"><span class="nb-icon">🎯</span><span>Renda</span></button>
     <button class="nav-btn" id="mb-nav-balanco" onclick="mbView('balanco')"><span class="nb-icon">📅</span><span>Anual</span></button>
     <button class="nav-btn" id="mb-nav-settings" onclick="mbView('settings')"><span class="nb-icon">⚙️</span><span>Conta</span></button>
@@ -1392,6 +1483,46 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
   </div>
 </div>
 
+<!-- ════ MODAL NOVO COFRE ════ -->
+<div class="modal-overlay" id="modal-cofre">
+  <div class="modal-box">
+    <h3 id="modal-cofre-title">🏦 Novo cofre</h3>
+    <input type="hidden" id="cofre-edit-id" value=""/>
+    <div class="modal-field">
+      <label>Emoji do cofre</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="cofre-emoji-picker">
+        🏦 🚀 ✈️ 🏠 🚗 📱 💻 🎓 💍 🏖️ 🎮 💪 🐶 👶 💊 🎵 🛍️ 🌍 ⚽ 🎯
+      </div>
+      <input type="hidden" id="cofre-emoji-val" value="🏦"/>
+    </div>
+    <div class="modal-field"><label>Nome do cofre</label><input type="text" id="cofre-nome-inp" placeholder="Ex: Viagem para Europa, Carro novo…"/></div>
+    <div class="modal-field"><label>Meta (R$)</label><input type="number" id="cofre-meta-inp" placeholder="Ex: 5000,00" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="modal-field"><label>Cor</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;" id="cofre-cor-picker"></div>
+      <input type="hidden" id="cofre-cor-val" value="#22c55e"/>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModal('modal-cofre')">Cancelar</button>
+      <button class="btn-modal-confirm" id="btn-salvar-cofre" onclick="salvarCofre()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL DEPÓSITO COFRE ════ -->
+<div class="modal-overlay" id="modal-deposito">
+  <div class="modal-box">
+    <h3 id="modal-deposito-title">💰 Depositar no cofre</h3>
+    <input type="hidden" id="deposito-cofre-id"/>
+    <div class="modal-field"><label>Valor (R$)</label><input type="number" id="deposito-val" placeholder="0,00" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="modal-field"><label>Descrição (opcional)</label><input type="text" id="deposito-desc" placeholder="Ex: Guardei do salário de maio…"/></div>
+    <div class="modal-field"><label>Data</label><input type="date" id="deposito-data"/></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModal('modal-deposito')">Cancelar</button>
+      <button class="btn-modal-confirm" id="btn-salvar-deposito" onclick="salvarDeposito()">💰 Depositar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ DRAWER MENU ════ -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
@@ -1410,12 +1541,14 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
     <div class="drawer-section">Financeiro</div>
     <button class="drawer-item" id="di-receitas" onclick="navTo('receitas')"><span class="di-icon">💵</span><span class="di-label">Entradas</span></button>
     <button class="drawer-item" id="di-contas" onclick="navTo('contas')"><span class="di-icon">📋</span><span class="di-label">Contas a Pagar</span></button>
-    <button class="drawer-item" id="di-parcelas" onclick="navTo('parcelas')"><span class="di-icon">💳</span><span class="di-label">Parcelas</span></button>
-    <button class="drawer-item" id="di-cartoes" onclick="navTo('cartoes')"><span class="di-icon">🏦</span><span class="di-label">Cartão de Crédito</span></button>
+    <button class="drawer-item" id="di-cartoes" onclick="navTo('cartoes')"><span class="di-icon">💳</span><span class="di-label">Cartão de Crédito</span></button>
+    <button class="drawer-item" id="di-parcelas" onclick="navTo('parcelas')" style="display:none;padding-left:36px;opacity:0.85;"><span class="di-icon" style="font-size:14px;">📦</span><span class="di-label" style="font-size:13px;">Parcelas</span></button>
 
     <div class="drawer-section">Planejamento</div>
     <button class="drawer-item" id="di-budget" onclick="navTo('budget')"><span class="di-icon">🎯</span><span class="di-label">Renda Mensal</span></button>
     <button class="drawer-item" id="di-balanco" onclick="navTo('balanco')"><span class="di-icon">📅</span><span class="di-label">Balanço Anual</span></button>
+    <button class="drawer-item" id="di-cofre" onclick="navTo('cofre')"><span class="di-icon">🏦</span><span class="di-label">Cofre</span></button>
+    <button class="drawer-item" id="di-assistente" onclick="navTo('assistente')"><span class="di-icon">🤖</span><span class="di-label">Assistente IA</span></button>
 
     <div class="drawer-section">Outros</div>
     <button class="drawer-item" id="di-export" onclick="navTo('export')" style="display:none;" class="pc-only"><span class="di-icon">📤</span><span class="di-label">Exportar</span></button>
@@ -1846,7 +1979,7 @@ function popularBudgetSelects() {
 // ══════════════════════════════════════════
 // DATA & STATE — todas as variáveis declaradas aqui no topo
 // ══════════════════════════════════════════
-let data = [], budgets = {}, parcelas = [], receitas = [], contas = [], cartoes = [], viewOffset = 0, currentTab = 'month';
+let data = [], budgets = {}, parcelas = [], receitas = [], contas = [], cartoes = [], cofres = [], cofreDepositos = [], viewOffset = 0, currentTab = 'month';
 let pcChart = null, mbChart = null;
 let realtimeStarted = false;
 let budgetSaveTimer = {};
@@ -1950,7 +2083,7 @@ async function fullSync() {
   setSyncStatus('syncing', 'Sincronizando…');
   try {
     // Testa cada tabela individualmente para identificar qual falha
-    let rows = [], budgetRows = [], parcelaRows = [], receitaRows = [], contaRows = [], cartaoRows = [];
+    let rows = [], budgetRows = [], parcelaRows = [], receitaRows = [], contaRows = [], cartaoRows = [], cofreRows = [], cofreDepRows = [];
 
     // Tenta buscar gastos com fallbacks progressivos
     try {
@@ -1982,6 +2115,12 @@ async function fullSync() {
     try { cartaoRows = await sbFetch('cartoes?select=*&order=created_at.desc'); }
     catch(e) { console.warn('cartoes falhou:', e.message); cartaoRows = []; }
 
+    try { cofreRows = await sbFetch('cofres?select=*&order=created_at.asc'); }
+    catch(e) { console.warn('cofres falhou:', e.message); cofreRows = []; }
+
+    try { cofreDepRows = await sbFetch('cofre_depositos?select=*&order=data.desc'); }
+    catch(e) { console.warn('cofre_depositos falhou:', e.message); cofreDepRows = []; }
+
     data = rows.map(r=>({id:r.id,description:r.description,amount:parseFloat(r.amount),date:r.date,category:r.category,payment:r.payment||'Pix',cartao_id:r.cartao_id||null}));
     budgets = {};
     (budgetRows||[]).forEach(r=>{
@@ -1992,7 +2131,9 @@ async function fullSync() {
     parcelas = parcelaRows || [];
     receitas = receitaRows || [];
     contas   = contaRows   || [];
-    cartoes  = cartaoRows  || [];
+    cartoes        = cartaoRows  || [];
+    cofres         = cofreRows   || [];
+    cofreDepositos = cofreDepRows|| [];
     populateCartaoSelects();
     setSyncTime();
     setSyncStatus('connected','Conectado · tempo real');
@@ -2274,17 +2415,20 @@ function render() {
     set('pc-m-top', top?(CATS[top[0]]?.icon||'')+' '+top[0]:'—');
     set('pc-m-topval', top?fmt(top[1]):'—');
 
-    // Orçamento restante = entradas reais + renda manual - total (gastos + contas + parcelas)
+    // Orçamento restante = entradas reais + renda manual - total (gastos + contas + parcelas + cofre)
     const entradasMes = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor),0);
+    const cofreMes    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
+    const totalComCofre = total + cofreMes;
     const base = gb > 0 ? gb + entradasMes : entradasMes;
     if (base > 0) {
-      const rem = base - total;
-      const pct = Math.min(Math.round(total/base*100), 100);
+      const rem = base - totalComCofre;
+      const pct = Math.min(Math.round(totalComCofre/base*100), 100);
       set('pc-m-brem', fmt(Math.max(rem, 0)));
       document.getElementById('pc-m-brem').className = 'mv lg '+(rem<0?'red':'green');
       const extras = [];
       if (contasPagasMes > 0) extras.push('contas: '+fmt(contasPagasMes));
       if (parcelasMes > 0)    extras.push('parcelas: '+fmt(parcelasMes));
+      if (cofreMes > 0)       extras.push('cofre: '+fmt(cofreMes));
       const label = gb > 0
         ? `${pct}% usado${extras.length?' · '+extras.join(' · '):''} · entradas: ${fmt(entradasMes)}`
         : `${pct}% das entradas usado`;
@@ -2292,6 +2436,13 @@ function render() {
     } else {
       set('pc-m-brem','—'); set('pc-m-bpct','Sem renda ou entradas neste mês');
     }
+
+    // Card Cofre — total acumulado em todos os cofres
+    const totalMetaCofres = cofres.reduce((s,c)=>s+parseFloat(c.meta||0),0);
+    const totalAcumCofres = cofres.reduce((s,c)=>s+parseFloat(c.acumulado||0),0);
+    const pctCofres = totalMetaCofres>0 ? Math.min(Math.round(totalAcumCofres/totalMetaCofres*100),100) : 0;
+    set('pc-m-cofre', fmt(totalAcumCofres));
+    set('pc-m-cofre-sub', cofres.length+' cofre'+(cofres.length!==1?'s':'')+' · meta: '+fmt(totalMetaCofres)+' · '+pctCofres+'%');
 
     renderCatBars('pc', ct); renderTrend('pc', md, vd); renderList(); renderSidebarCats(ct); renderSaldo();
 
@@ -2317,16 +2468,25 @@ function render() {
     set('mb-m-topval', top?fmt(top[1]):'—');
 
     const entradasMesMb = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor),0);
+    const cofreMesMb    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
+    const totalComCofreMb = total + cofreMesMb;
     const baseMb = gb > 0 ? gb + entradasMesMb : entradasMesMb;
     if (baseMb > 0) {
-      const rem = baseMb - total;
-      const pct = Math.min(Math.round(total/baseMb*100), 100);
+      const rem = baseMb - totalComCofreMb;
+      const pct = Math.min(Math.round(totalComCofreMb/baseMb*100), 100);
       set('mb-m-brem', fmt(Math.max(rem, 0)));
       document.getElementById('mb-m-brem').className = 'mv sm '+(rem<0?'red':'green');
-      set('mb-m-bpct', pct+'% usado');
+      set('mb-m-bpct', pct+'% usado'+(cofreMesMb>0?' · cofre: '+fmt(cofreMesMb):''));
     } else {
       set('mb-m-brem','—'); set('mb-m-bpct','Sem entradas');
     }
+
+    // Card Cofre mobile
+    const totalMetaCofresMb = cofres.reduce((s,c)=>s+parseFloat(c.meta||0),0);
+    const totalAcumCofresMb = cofres.reduce((s,c)=>s+parseFloat(c.acumulado||0),0);
+    const pctCoresMb = totalMetaCofresMb>0 ? Math.min(Math.round(totalAcumCofresMb/totalMetaCofresMb*100),100) : 0;
+    set('mb-m-cofre', fmt(totalAcumCofresMb));
+    set('mb-m-cofre-sub', cofres.length+' cofre'+(cofres.length!==1?'s':'')+' · '+pctCoresMb+'% das metas');
 
     renderCatBars('mb', ct); renderTrend('mb', md, vd); renderList(); renderSaldo();
     if (document.getElementById('mb-view-budget')?.classList.contains('active')) renderBudgetList();
@@ -2593,6 +2753,12 @@ function openDrawer() {
   document.getElementById('drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.add('open');
   document.querySelectorAll('.btn-hamburger').forEach(b=>b.classList.add('open'));
+  // Mostra Parcelas se cartoes estiver ativo
+  const diParcelas = document.getElementById('di-parcelas');
+  const diCartoes = document.getElementById('di-cartoes');
+  if (diParcelas && diCartoes) {
+    diParcelas.style.display = diCartoes.classList.contains('active') ? 'flex' : 'none';
+  }
 }
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
@@ -2607,24 +2773,31 @@ function navTo(name) {
   document.querySelectorAll('.drawer-item').forEach(b=>b.classList.remove('active'));
   const di = document.getElementById('di-'+name);
   if (di) di.classList.add('active');
+  // Parcelas fica ativo no item cartoes também
+  if (name==='parcelas') document.getElementById('di-cartoes')?.classList.add('active');
+
+  // Mostra subtópico Parcelas só quando cartoes ou parcelas está selecionado
+  const diParcelas = document.getElementById('di-parcelas');
+  if (diParcelas) diParcelas.style.display = (name==='cartoes'||name==='parcelas') ? 'flex' : 'none';
+
+  // Parcelas redireciona para a tela de Cartão de Crédito
+  const target = name === 'parcelas' ? 'cartoes' : name;
 
   if (IS_MOBILE) {
-    // Títulos das páginas mobile
     const titles = {
       dashboard:'Início', add:'Novo Gasto', receitas:'Entradas',
-      contas:'Contas a Pagar', parcelas:'Parcelas', cartoes:'Cartão de Crédito',
-      budget:'Renda Mensal', balanco:'Balanço Anual', conta:'Minha Conta', export:'Exportar'
+      contas:'Contas a Pagar', cartoes:'Cartão de Crédito',
+      budget:'Renda Mensal', balanco:'Balanço Anual', conta:'Minha Conta',
+      export:'Exportar', cofre:'Cofre', assistente:'Assessor IA'
     };
     const tEl = document.getElementById('mb-page-title');
-    if (tEl) tEl.textContent = titles[name] || name;
-    // Mapeia 'dashboard' → 'home' e 'add' → 'add' para as views mobile
-    const viewName = name === 'dashboard' ? 'home' : name === 'conta' ? 'settings' : name;
+    if (tEl) tEl.textContent = titles[target] || target;
+    const viewName = target === 'dashboard' ? 'home' : target === 'conta' ? 'settings' : target;
     mbView(viewName);
   } else {
-    // Mostra item de exportar só no PC
     const exportItem = document.getElementById('di-export');
     if (exportItem) exportItem.style.display = 'flex';
-    pcView(name, null);
+    pcView(target, null);
   }
 }
 
@@ -2646,7 +2819,7 @@ function pcView(name, el) {
   const t=document.getElementById('pc-view-'+name); if(t){t.classList.add('active');t.style.display='block';}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
-  const titles={dashboard:['Dashboard','Visão geral dos seus gastos'],receitas:['Entradas','Registre suas receitas'],contas:['Contas a Pagar','Checklist de contas do mês'],parcelas:['Parcelas','Controle de compras parceladas'],cartoes:['Cartão de Crédito','Faturas e gastos no crédito'],budget:['Renda Mensal','Defina sua renda e limites'],balanco:['Balanço Anual','Resumo financeiro do ano'],export:['Exportar','Backup e exportação'],conta:['Minha Conta','Configurações e perfil']};
+  const titles={dashboard:['Dashboard','Visão geral dos seus gastos'],receitas:['Entradas','Registre suas receitas'],contas:['Contas a Pagar','Checklist de contas do mês'],parcelas:['Parcelas','Controle de compras parceladas'],cartoes:['Cartão de Crédito','Faturas e gastos no crédito'],budget:['Renda Mensal','Defina sua renda e limites'],balanco:['Balanço Anual','Resumo financeiro do ano'],export:['Exportar','Backup e exportação'],conta:['Minha Conta','Configurações e perfil'],cofre:['Cofre','Guarde dinheiro com metas']};
   const tt=titles[name]||[name,''];
   set('pc-page-title',tt[0]); set('pc-page-sub',tt[1]);
   document.getElementById('pc-monnav').style.display = name==='dashboard'?'flex':'none';
@@ -2658,6 +2831,8 @@ function pcView(name, el) {
   if(name==='balanco') renderBalanco('pc');
   if(name==='conta') initContaPanel();
   if(name==='cartoes') renderCartoes('pc');
+  if(name==='cofre') renderCofre('pc');
+  if(name==='assistente') { initChat('pc'); }
   if(window.innerWidth<640) document.getElementById('pc-sidebar').classList.remove('open');
 }
 
@@ -2676,6 +2851,8 @@ function mbView(name) {
   if(name==='balanco') setTimeout(()=>renderBalanco('mb'),50);
   if(name==='settings') setTimeout(initContaPanel,50);
   if(name==='cartoes') setTimeout(()=>renderCartoes('mb'),50);
+  if(name==='cofre') setTimeout(()=>renderCofre('mb'),50);
+  if(name==='assistente') setTimeout(()=>initChat('mb'),50);
 }
 
 // ══════════════════════════════════════════
@@ -2815,7 +2992,7 @@ function renderParcelasPC() {
     </div>`;
   } else alertEl.innerHTML = '';
 
-  if (!parcelas.length) { gridEl.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="ei">💳</div><p>Nenhuma compra parcelada registrada</p></div>`; return; }
+  if (!parcelas.length) { gridEl.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="ei">📦/div><p>Nenhuma compra parcelada registrada</p></div>`; return; }
 
   gridEl.innerHTML = parcelas.map(p => parcelaCardHTML(p, false)).join('');
   bindParcelaEvents(gridEl);
@@ -2832,7 +3009,7 @@ function renderParcelasMB() {
     alertEl.innerHTML = `<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:12px;color:#fca5a5;">⚠️ ${vencendo.map(p=>`<strong>${p.descricao}</strong> vence em ${diasParaVencer(p)}d`).join(' · ')}</div>`;
   } else alertEl.innerHTML = '';
 
-  if (!parcelas.length) { listEl.innerHTML=`<div class="empty-state"><div class="ei">💳</div><p>Nenhuma compra parcelada</p></div>`; return; }
+  if (!parcelas.length) { listEl.innerHTML=`<div class="empty-state"><div class="ei">📦/div><p>Nenhuma compra parcelada</p></div>`; return; }
 
   listEl.innerHTML = parcelas.map(p => parcelaCardHTML(p, true)).join('');
   bindParcelaEvents(listEl);
@@ -3010,8 +3187,9 @@ function renderSaldo() {
   const totalContas   = contas.filter(c=>c.pago && c.vencimento.startsWith(mk)).reduce((s,c)=>s+parseFloat(c.valor), 0);
   // Parcelas: soma valor de cada parcela paga no mês atual (data_inicio + parcelas_pagas)
   const totalParcelas = calcParcelasMes(mk);
+  const totalCofre    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor), 0);
   const totalEntradas = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor), 0);
-  const totalSaidas   = totalGastos + totalContas + totalParcelas;
+  const totalSaidas   = totalGastos + totalContas + totalParcelas + totalCofre;
   const saldo         = totalEntradas - totalSaidas;
   const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
 
@@ -4046,7 +4224,7 @@ function abrirDetalhe(tipo) {
 
     // Parcelas
     if (parcelaMes > 0) {
-      html += `<div class="detail-section"><div class="detail-section-title">💳 Parcelas do mês · ${fmt(parcelaMes)}</div>`;
+      html += `<div class="detail-section"><div class="detail-section-title">📦 Parcelas do mês · ${fmt(parcelaMes)}</div>`;
       parcelas.forEach(p=>{
         if (p.parcelas_pagas <= 0) return;
         const inicio = new Date(p.data_inicio);
@@ -4449,106 +4627,125 @@ function renderCartoes(platform) {
   const el = document.getElementById(listId);
   if (!el) return;
 
-  if (cartoes.length === 0) {
-    el.innerHTML = `
-      <div class="empty-state" style="padding:3rem 1rem;">
-        <div class="ei">🏦</div>
+  // ── Seção de Parcelas (todas, com e sem cartão) ──
+  const parcelasAtivas = parcelas.filter(p => restantes(p) > 0);
+  const parcelasSection = parcelasAtivas.length === 0 ? '' : `
+    <div style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:16px;font-weight:700;color:#f1f5f9;">📦 Parcelas em andamento</div>
+        <button class="btn-nova-parcela" style="font-size:12px;padding:8px 14px;" onclick="abrirModalParcela()">＋ Nova parcela</button>
+      </div>
+      <div id="cartoes-parcelas-alertas"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(${platform==='pc'?'340px':'100%'},1fr));gap:14px;">
+        ${parcelasAtivas.map(p => parcelaCardHTML(p, platform!=='pc')).join('')}
+      </div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:24px;"></div>`;
+
+  // Alertas de parcelas vencendo
+  setTimeout(() => {
+    const alertEl = document.getElementById('cartoes-parcelas-alertas');
+    if (!alertEl) return;
+    const vencendo = parcelasAtivas.filter(p => diasParaVencer(p) <= 5);
+    alertEl.innerHTML = vencendo.length
+      ? `<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:11px 14px;margin-bottom:12px;font-size:12px;color:#fca5a5;">⚠️ ${vencendo.map(p=>`<strong>${p.descricao}</strong> vence em ${diasParaVencer(p)}d`).join(' · ')}</div>`
+      : '';
+  }, 50);
+
+  // ── Seção de Cartões ──
+  const cartoesSection = cartoes.length === 0
+    ? `<div class="empty-state" style="padding:2rem 1rem;">
+        <div class="ei">💳</div>
         <p style="margin-bottom:1rem;">Nenhum cartão cadastrado</p>
         <button class="btn-add-cartao" onclick="abrirModalCartao()">＋ Cadastrar meu primeiro cartão</button>
-      </div>`;
-    return;
-  }
-
-  el.innerHTML = cartoes.map(cartao => {
-    // Gastos no crédito vinculados a este cartão
-    const gastosDoCartao = data.filter(e => e.payment==='Crédito' && e.cartao_id===cartao.id);
-
-    // Agrupa por fatura
-    const faturas = {};
-    gastosDoCartao.forEach(e => {
-      const fk = getFaturaKey(e.date, cartao.dia_fechamento);
-      if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
-      faturas[fk].gastos.push(e);
-    });
-
-    // Parcelas vinculadas a este cartão
-    parcelas.filter(p => p.cartao_id===cartao.id && restantes(p)>0).forEach(p => {
-      const proxVenc = proximoVencimento(p);
-      const dateStr = proxVenc.getFullYear()+'-'+String(proxVenc.getMonth()+1).padStart(2,'0')+'-'+String(proxVenc.getDate()).padStart(2,'0');
-      const fk = getFaturaKey(dateStr, cartao.dia_fechamento);
-      if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
-      faturas[fk].parcItems.push({ desc:p.descricao, num:p.parcelas_pagas+1, total:p.num_parcelas, val:valorParcela(p), date:dateStr });
-    });
-
-    const faturaKeys = Object.keys(faturas).sort().reverse();
-
-    // Total da fatura atual
-    const mkAtual = monthKey(new Date());
-    const faturaAtual = faturas[mkAtual];
-    const totalAtual = faturaAtual
-      ? faturaAtual.gastos.reduce((s,e)=>s+e.amount,0) + faturaAtual.parcItems.reduce((s,p)=>s+p.val,0)
-      : 0;
-
-    const faturasHTML = faturaKeys.length === 0
-      ? `<div class="fatura-vazia">Nenhum gasto com crédito vinculado a este cartão.</div>`
-      : faturaKeys.map(fk => {
-          const { gastos:items, parcItems } = faturas[fk];
-          const totalGastos = items.reduce((s,e)=>s+e.amount,0);
-          const totalParc   = parcItems.reduce((s,p)=>s+p.val,0);
-          const total = totalGastos + totalParc;
-          const venc  = getFaturaVencimento(fk, cartao.dia_vencimento);
-          const aberta = fk >= mkAtual;
-          return `
-          <div class="fatura-grupo">
-            <div class="fatura-titulo">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <h4>Fatura ${fmtFaturaKey(fk)}</h4>
-                <span class="fatura-badge${aberta?'':' fechada'}">${aberta?'ABERTA':'FECHADA'}</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <span class="fatura-total">${fmt(total)}</span>
-                ${aberta?`<button class="btn-fechar-fatura" onclick="fecharFatura('${cartao.id}','${fk}')">📋 Gerar conta</button>`:''}
+       </div>`
+    : cartoes.map(cartao => {
+        const gastosDoCartao = data.filter(e => e.payment==='Crédito' && e.cartao_id===cartao.id);
+        const faturas = {};
+        gastosDoCartao.forEach(e => {
+          const fk = getFaturaKey(e.date, cartao.dia_fechamento);
+          if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
+          faturas[fk].gastos.push(e);
+        });
+        parcelas.filter(p => p.cartao_id===cartao.id && restantes(p)>0).forEach(p => {
+          const proxVenc = proximoVencimento(p);
+          const dateStr = proxVenc.getFullYear()+'-'+String(proxVenc.getMonth()+1).padStart(2,'0')+'-'+String(proxVenc.getDate()).padStart(2,'0');
+          const fk = getFaturaKey(dateStr, cartao.dia_fechamento);
+          if (!faturas[fk]) faturas[fk] = { gastos:[], parcItems:[] };
+          faturas[fk].parcItems.push({ desc:p.descricao, num:p.parcelas_pagas+1, total:p.num_parcelas, val:valorParcela(p), date:dateStr });
+        });
+        const faturaKeys = Object.keys(faturas).sort().reverse();
+        const mkAtual = monthKey(new Date());
+        const faturaAtual = faturas[mkAtual];
+        const totalAtual = faturaAtual
+          ? faturaAtual.gastos.reduce((s,e)=>s+e.amount,0) + faturaAtual.parcItems.reduce((s,p)=>s+p.val,0)
+          : 0;
+        const faturasHTML = faturaKeys.length === 0
+          ? `<div class="fatura-vazia">Nenhum gasto com crédito vinculado a este cartão.</div>`
+          : faturaKeys.map(fk => {
+              const { gastos:items, parcItems } = faturas[fk];
+              const total = items.reduce((s,e)=>s+e.amount,0) + parcItems.reduce((s,p)=>s+p.val,0);
+              const venc  = getFaturaVencimento(fk, cartao.dia_vencimento);
+              const aberta = fk >= mkAtual;
+              return `
+              <div class="fatura-grupo">
+                <div class="fatura-titulo">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <h4>Fatura ${fmtFaturaKey(fk)}</h4>
+                    <span class="fatura-badge${aberta?'':' fechada'}">${aberta?'ABERTA':'FECHADA'}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span class="fatura-total">${fmt(total)}</span>
+                    ${aberta?`<button class="btn-fechar-fatura" onclick="fecharFatura('${cartao.id}','${fk}')">📋 Gerar conta</button>`:''}
+                  </div>
+                </div>
+                <div style="font-size:11px;color:#64748b;margin-bottom:10px;">Vencimento: ${fmtDate(venc)}</div>
+                ${items.map(e=>`
+                  <div class="fatura-item">
+                    <div class="fatura-item-info">
+                      <div class="fatura-item-desc">${e.description}</div>
+                      <div class="fatura-item-meta">${fmtDate(e.date)} · ${e.category}</div>
+                    </div>
+                    <div class="fatura-item-val">${fmt(e.amount)}</div>
+                  </div>`).join('')}
+                ${parcItems.map(p=>`
+                  <div class="fatura-item" style="border-left:2px solid #60a5fa;">
+                    <div class="fatura-item-info">
+                      <div class="fatura-item-desc">${p.desc} <span style="color:#60a5fa;font-size:11px;">(${p.num}/${p.total})</span></div>
+                      <div class="fatura-item-meta">📦 Parcela · ${fmtDate(p.date)}</div>
+                    </div>
+                    <div class="fatura-item-val" style="color:#60a5fa;">${fmt(p.val)}</div>
+                  </div>`).join('')}
+              </div>`;
+            }).join('');
+        return `
+        <div class="cartao-card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div>
+              <div class="cartao-nome">💳 ${cartao.nome}</div>
+              <div class="cartao-info" style="margin-top:4px;">
+                <span>✂️ Fecha dia ${cartao.dia_fechamento}</span>
+                <span>📅 Vence dia ${cartao.dia_vencimento}</span>
+                ${cartao.limite?`<span>💰 Limite ${fmt(cartao.limite)}</span>`:''}
               </div>
             </div>
-            <div style="font-size:11px;color:#64748b;margin-bottom:10px;">Vencimento: ${fmtDate(venc)}</div>
-            ${items.map(e=>`
-              <div class="fatura-item">
-                <div class="fatura-item-info">
-                  <div class="fatura-item-desc">${e.description}</div>
-                  <div class="fatura-item-meta">${fmtDate(e.date)} · ${e.category}</div>
-                </div>
-                <div class="fatura-item-val">${fmt(e.amount)}</div>
-              </div>`).join('')}
-            ${parcItems.map(p=>`
-              <div class="fatura-item" style="border-left:2px solid #60a5fa;">
-                <div class="fatura-item-info">
-                  <div class="fatura-item-desc">${p.desc} <span style="color:#60a5fa;font-size:11px;">(${p.num}/${p.total})</span></div>
-                  <div class="fatura-item-meta">💳 Parcela · ${fmtDate(p.date)}</div>
-                </div>
-                <div class="fatura-item-val" style="color:#60a5fa;">${fmt(p.val)}</div>
-              </div>`).join('')}
-          </div>`;
-        }).join('');
-
-    return `
-    <div class="cartao-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div>
-          <div class="cartao-nome">🏦 ${cartao.nome}</div>
-          <div class="cartao-info" style="margin-top:4px;">
-            <span>✂️ Fecha dia ${cartao.dia_fechamento}</span>
-            <span>📅 Vence dia ${cartao.dia_vencimento}</span>
-            ${cartao.limite?`<span>💰 Limite ${fmt(cartao.limite)}</span>`:''}
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${totalAtual>0?`<span style="font-size:13px;font-weight:700;color:#f87171;font-family:'JetBrains Mono',monospace;">${fmt(totalAtual)}</span>`:''}
+              <button onclick="delCartao('${cartao.id}')" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:4px 8px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;" title="Remover cartão">✕</button>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          ${totalAtual>0?`<span style="font-size:13px;font-weight:700;color:#f87171;font-family:'JetBrains Mono',monospace;">${fmt(totalAtual)}</span>`:''}
-          <button onclick="delCartao('${cartao.id}')" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:4px 8px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;" title="Remover cartão">✕</button>
-        </div>
-      </div>
-      ${faturasHTML}
-    </div>`;
-  }).join('');
+          ${faturasHTML}
+        </div>`;
+      }).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:16px;font-weight:700;color:#f1f5f9;">💳 Meus Cartões</div>
+      <button class="btn-nova-parcela" onclick="abrirModalCartao()">＋ Cadastrar cartão</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:24px;">${cartoesSection}</div>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:24px;"></div>
+  ` + parcelasSection;
 }
 
 // Fecha modal-cartao clicando fora
@@ -4556,6 +4753,386 @@ document.getElementById('modal-cartao')?.addEventListener('click', function(e) {
   if (e.target === this) fecharModal('modal-cartao');
 });
 
+
+// ══════════════════════════════════════════
+// COFRE
+// ══════════════════════════════════════════
+const COFRE_CORES = ['#22c55e','#3b82f6','#f87171','#a78bfa','#fbbf24','#f472b6','#2dd4bf','#fb923c','#60a5fa','#34d399'];
+const COFRE_EMOJIS = ['🏦','🚀','✈️','🏠','🚗','📱','💻','🎓','💍','🏖️','🎮','💪','🐶','👶','💊','🎵','🛍️','🌍','⚽','🎯'];
+
+function renderCofre(platform) {
+  const pfx = platform === 'pc' ? 'pc' : 'mb';
+  const el = document.getElementById(pfx === 'pc' ? 'pc-cofre-grid' : 'mb-cofre-list');
+  if (!el) return;
+
+  if (!cofres.length) {
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;padding:3rem 1rem;">
+      <div class="ei">🏦</div>
+      <p style="margin-bottom:1rem;">Nenhum cofre criado ainda</p>
+      <button class="btn-add-cartao" onclick="abrirModalCofre()">＋ Criar meu primeiro cofre</button>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = cofres.map(c => {
+    const deps = cofreDepositos.filter(d => d.cofre_id === c.id);
+    const acumulado = parseFloat(c.acumulado) || 0;
+    const meta = parseFloat(c.meta) || 1;
+    const pct = Math.min(Math.round(acumulado / meta * 100), 100);
+    const falta = Math.max(meta - acumulado, 0);
+    const concluido = acumulado >= meta;
+    const barColor = concluido ? '#22c55e' : pct > 75 ? '#fbbf24' : c.cor || '#22c55e';
+
+    const ultimosDeps = deps.slice(0, 3);
+
+    return `<div class="cofre-card${concluido?' cofre-concluido':''}" style="--cofre-cor:${c.cor||'#22c55e'};">
+      <div class="cofre-card::before" style="background:${c.cor||'#22c55e'};"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${c.cor||'#22c55e'};border-radius:20px 20px 0 0;"></div>
+      <div class="cofre-header">
+        <div>
+          <div class="cofre-emoji">${c.emoji||'🏦'}</div>
+          <div class="cofre-nome">${c.nome}</div>
+        </div>
+        <div class="cofre-actions">
+          <button onclick="abrirDeposito('${c.id}','${c.nome.replace(/'/g,"\\'")}','${c.emoji||'🏦'}')" style="background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;touch-action:manipulation;" ${concluido?'disabled':''}>＋ Depositar</button>
+          <button onclick="editarCofre('${c.id}')" style="background:none;border:none;color:#60a5fa;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:8px;touch-action:manipulation;" title="Editar cofre">✏️</button>
+          <button onclick="deletarCofre('${c.id}')" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:8px;touch-action:manipulation;">🗑</button>
+        </div>
+      </div>
+      <div class="cofre-pct" style="color:${barColor};">${pct}%</div>
+      <div class="cofre-valores">
+        <span>Guardado: <strong style="color:#f1f5f9;">${fmt(acumulado)}</strong></span>
+        <span>Meta: <strong style="color:#f1f5f9;">${fmt(meta)}</strong></span>
+      </div>
+      <div class="cofre-bar-track"><div class="cofre-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+      <div class="cofre-stats">
+        <div class="cofre-stat"><label>Falta guardar</label><strong style="color:${falta>0?'#f87171':'#22c55e'};">${fmt(falta)}</strong></div>
+        <div class="cofre-stat"><label>Depósitos</label><strong style="color:#60a5fa;">${deps.length}</strong></div>
+      </div>
+      ${concluido ? `<div style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:600;color:#22c55e;margin-bottom:10px;">🎉 Meta atingida!</div>` : ''}
+      ${ultimosDeps.length ? `<div class="cofre-hist">
+        <div class="cofre-hist-title">Últimos depósitos</div>
+        ${ultimosDeps.map(d=>`<div class="cofre-dep-item">
+          <span style="color:#94a3b8;">${d.descricao||'Depósito'} · ${fmtDate(d.data)}</span>
+          <span style="color:#22c55e;font-weight:600;font-family:'JetBrains Mono',monospace;">+${fmt(parseFloat(d.valor))}</span>
+        </div>`).join('')}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function abrirModalCofre() {
+  document.getElementById('cofre-edit-id').value = '';
+  document.getElementById('modal-cofre-title').textContent = '🏦 Novo cofre';
+  document.getElementById('cofre-nome-inp').value = '';
+  document.getElementById('cofre-meta-inp').value = '';
+  document.getElementById('cofre-emoji-val').value = '🏦';
+  document.getElementById('cofre-cor-val').value = '#22c55e';
+
+  // Emoji picker
+  const ep = document.getElementById('cofre-emoji-picker');
+  ep.innerHTML = COFRE_EMOJIS.map(e =>
+    `<div onclick="selectCofreEmoji(this,'${e}')" style="font-size:24px;cursor:pointer;padding:4px;border-radius:8px;border:2px solid ${e==='🏦'?'#22c55e':'transparent'};transition:all 0.15s;" data-emoji="${e}">${e}</div>`
+  ).join('');
+
+  // Cor picker
+  const cp = document.getElementById('cofre-cor-picker');
+  cp.innerHTML = COFRE_CORES.map(cor =>
+    `<div onclick="selectCofreCor(this,'${cor}')" style="width:28px;height:28px;border-radius:50%;background:${cor};cursor:pointer;border:3px solid ${cor==='#22c55e'?'#fff':'transparent'};transition:all 0.15s;" data-cor="${cor}"></div>`
+  ).join('');
+
+  document.getElementById('modal-cofre').dataset.openedAt = Date.now();
+  document.getElementById('modal-cofre').classList.add('open');
+  setTimeout(()=>document.getElementById('cofre-nome-inp').focus(), 100);
+}
+
+function selectCofreEmoji(el, emoji) {
+  document.getElementById('cofre-emoji-val').value = emoji;
+  document.querySelectorAll('#cofre-emoji-picker div').forEach(d => d.style.borderColor = 'transparent');
+  el.style.borderColor = '#22c55e';
+}
+
+function selectCofreCor(el, cor) {
+  document.getElementById('cofre-cor-val').value = cor;
+  document.querySelectorAll('#cofre-cor-picker div').forEach(d => d.style.borderColor = 'transparent');
+  el.style.borderColor = '#fff';
+}
+
+function editarCofre(id) {
+  const c = cofres.find(x=>x.id===id); if(!c) return;
+  document.getElementById('cofre-edit-id').value = id;
+  document.getElementById('modal-cofre-title').textContent = '✏️ Editar cofre';
+  document.getElementById('cofre-nome-inp').value = c.nome;
+  document.getElementById('cofre-meta-inp').value = c.meta;
+  document.getElementById('cofre-emoji-val').value = c.emoji||'🏦';
+  document.getElementById('cofre-cor-val').value = c.cor||'#22c55e';
+
+  const ep = document.getElementById('cofre-emoji-picker');
+  ep.innerHTML = COFRE_EMOJIS.map(e =>
+    `<div onclick="selectCofreEmoji(this,'${e}')" style="font-size:24px;cursor:pointer;padding:4px;border-radius:8px;border:2px solid ${e===(c.emoji||'🏦')?'#22c55e':'transparent'};transition:all 0.15s;" data-emoji="${e}">${e}</div>`
+  ).join('');
+  const cp = document.getElementById('cofre-cor-picker');
+  cp.innerHTML = COFRE_CORES.map(cor =>
+    `<div onclick="selectCofreCor(this,'${cor}')" style="width:28px;height:28px;border-radius:50%;background:${cor};cursor:pointer;border:3px solid ${cor===(c.cor||'#22c55e')?'#fff':'transparent'};transition:all 0.15s;" data-cor="${cor}"></div>`
+  ).join('');
+
+  document.getElementById('modal-cofre').dataset.openedAt = Date.now();
+  document.getElementById('modal-cofre').classList.add('open');
+}
+
+async function salvarCofre() {
+  const editId = document.getElementById('cofre-edit-id').value;
+  const nome = document.getElementById('cofre-nome-inp').value.trim();
+  const meta = parseFloat(document.getElementById('cofre-meta-inp').value);
+  const emoji = document.getElementById('cofre-emoji-val').value || '🏦';
+  const cor   = document.getElementById('cofre-cor-val').value || '#22c55e';
+  if (!nome || !meta || meta <= 0) { toast('⚠️ Preencha nome e meta', false); return; }
+  const btn = document.getElementById('btn-salvar-cofre');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    if (editId) {
+      // Editar cofre existente
+      await sbFetch('cofres?id=eq.'+editId, { method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({nome, meta, emoji, cor}) });
+      const i = cofres.findIndex(c=>c.id===editId);
+      if (i>=0) cofres[i] = {...cofres[i], nome, meta, emoji, cor};
+      toast('✅ Cofre atualizado!');
+    } else {
+      // Novo cofre
+      const r = await sbFetch('cofres', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({user_id:currentUser.id, nome, meta, acumulado:0, emoji, cor}) });
+      const ins = Array.isArray(r)?r[0]:r;
+      if (ins) cofres.push(ins);
+      toast('✅ Cofre criado!');
+    }
+    fecharModal('modal-cofre');
+    renderCofre(IS_MOBILE?'mb':'pc');
+    render();
+  } catch(e) { toast('❌ '+e.message, false); }
+  btn.disabled = false; btn.textContent = '💾 Salvar';
+}
+
+function abrirDeposito(cofreId, cofreNome, cofreEmoji) {
+  document.getElementById('deposito-cofre-id').value = cofreId;
+  document.getElementById('modal-deposito-title').textContent = `${cofreEmoji} Depositar em "${cofreNome}"`;
+  document.getElementById('deposito-val').value = '';
+  document.getElementById('deposito-desc').value = '';
+  document.getElementById('deposito-data').value = todayStr();
+  document.getElementById('modal-deposito').dataset.openedAt = Date.now();
+  document.getElementById('modal-deposito').classList.add('open');
+  setTimeout(()=>document.getElementById('deposito-val').focus(), 100);
+}
+
+async function salvarDeposito() {
+  const cofreId = document.getElementById('deposito-cofre-id').value;
+  const valor = parseFloat(document.getElementById('deposito-val').value);
+  const desc  = document.getElementById('deposito-desc').value.trim();
+  const data_d = document.getElementById('deposito-data').value;
+  if (!valor || valor <= 0 || !data_d) { toast('⚠️ Preencha o valor e a data', false); return; }
+
+  // Calcula saldo disponível no mês do depósito
+  const mk = data_d.slice(0,7);
+  const gb = getBudget('__geral__', mk);
+  const entradasMk  = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor),0);
+  const gastosMk    = data.filter(e=>e.date.startsWith(mk)).reduce((s,e)=>s+e.amount,0);
+  const contasMk    = contas.filter(c=>c.pago && c.vencimento.startsWith(mk)).reduce((s,c)=>s+parseFloat(c.valor),0);
+  const parcelasMk  = calcParcelasMes(mk);
+  const cofreMkAtual= cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
+  const base        = gb > 0 ? gb + entradasMk : entradasMk;
+  const totalSaidas = gastosMk + contasMk + parcelasMk + cofreMkAtual;
+  const saldoDisp   = base - totalSaidas;
+
+  if (base > 0 && valor > saldoDisp) {
+    toast(`❌ Saldo insuficiente! Disponível: ${fmt(Math.max(saldoDisp,0))}`, false);
+    return;
+  }
+
+  const btn = document.getElementById('btn-salvar-deposito');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    const r = await sbFetch('cofre_depositos', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({user_id:currentUser.id, cofre_id:cofreId, valor, descricao:desc||null, data:data_d}) });
+    const ins = Array.isArray(r)?r[0]:r;
+    if (ins) cofreDepositos.unshift(ins);
+    const cofre = cofres.find(c=>c.id===cofreId);
+    if (cofre) {
+      const novoAcumulado = parseFloat(cofre.acumulado) + valor;
+      await sbFetch('cofres?id=eq.'+cofreId, { method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({acumulado:novoAcumulado}) });
+      cofre.acumulado = novoAcumulado;
+    }
+    fecharModal('modal-deposito');
+    renderCofre(IS_MOBILE?'mb':'pc');
+    render();
+    const pct = cofre ? Math.round(parseFloat(cofre.acumulado)/parseFloat(cofre.meta)*100) : 0;
+    toast(pct >= 100 ? '🎉 Meta atingida!' : `✅ Depósito realizado! ${pct}% da meta`);
+  } catch(e) { toast('❌ '+e.message, false); }
+  btn.disabled = false; btn.textContent = '💰 Depositar';
+}
+
+async function deletarCofre(id) {
+  if (!confirm('Excluir este cofre e todos os depósitos? O valor NÃO voltará para o saldo.')) return;
+  try {
+    await sbFetch('cofre_depositos?cofre_id=eq.'+id, { method:'DELETE' });
+    await sbFetch('cofres?id=eq.'+id, { method:'DELETE' });
+    cofres = cofres.filter(c=>c.id!==id);
+    cofreDepositos = cofreDepositos.filter(d=>d.cofre_id!==id);
+    renderCofre(IS_MOBILE?'mb':'pc');
+    toast('🗑 Cofre removido');
+  } catch(e) { toast('❌ Erro ao excluir', false); }
+}
+
+// ══════════════════════════════════════════
+// ASSISTENTE IA
+// ══════════════════════════════════════════
+let chatHistory = []; // histórico da conversa
+const CHAT_SUGGESTIONS = [
+  'Como estão meus gastos este mês?',
+  'Onde estou gastando mais?',
+  'Tenho contas atrasadas?',
+  'Resumo do meu saldo',
+  'Dicas para economizar',
+  'Qual minha maior despesa?',
+];
+
+function initChat(pfx) {
+  chatHistory = [];
+  const msgs = document.getElementById(pfx+'-chat-messages');
+  if (!msgs) return;
+  msgs.innerHTML = '';
+  // Mensagem de boas-vindas
+  const nome = currentUser?.user_metadata?.full_name?.split(' ')[0] || 'você';
+  addChatMsg(pfx, 'bot', `Olá, ${nome}! 👋 Sou seu assessor financeiro virtual.\n\nPosso te ajudar com:\n• Resumo dos seus gastos e saldo\n• Análise por categoria\n• Alertas de contas e parcelas\n• Dicas personalizadas de economia\n\nO que você quer saber?`);
+  renderSuggestions(pfx);
+}
+
+function renderSuggestions(pfx) {
+  const el = document.getElementById(pfx+'-chat-suggestions');
+  if (!el) return;
+  el.innerHTML = CHAT_SUGGESTIONS.map(s =>
+    `<button class="chat-sug" onclick="usarSugestao('${pfx}','${s.replace(/'/g,"\\'")}')">${s}</button>`
+  ).join('');
+}
+
+function usarSugestao(pfx, texto) {
+  const input = document.getElementById(pfx+'-chat-input');
+  if (input) { input.value = texto; }
+  enviarChat(pfx);
+}
+
+function addChatMsg(pfx, role, text) {
+  const msgs = document.getElementById(pfx+'-chat-messages');
+  if (!msgs) return;
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = role === 'bot'
+    ? `<div class="chat-msg-av">🤖</div><div class="chat-bubble">${text.replace(/\n/g,'<br>')}</div>`
+    : `<div class="chat-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function buildContexto() {
+  // Monta um resumo financeiro para o assistente
+  const vd = getViewDate();
+  const mk = monthKey(vd);
+  const mesNome = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][vd.getMonth()];
+
+  const gastosMes   = data.filter(e=>e.date.startsWith(mk));
+  const totalG      = gastosMes.reduce((s,e)=>s+e.amount,0);
+  const entradasMes = receitas.filter(r=>r.data.startsWith(mk));
+  const totalE      = entradasMes.reduce((s,r)=>s+parseFloat(r.valor),0);
+  const contasPend  = contas.filter(c=>!c.pago);
+  const contasAtras = contas.filter(c=>!c.pago && c.vencimento < todayStr());
+  const parcelasAt  = parcelas.filter(p=>restantes(p)>0);
+  const totalParc   = parcelasAt.reduce((s,p)=>s+valorParcela(p),0);
+  const saldo       = totalE - totalG;
+
+  // Por categoria
+  const ct = {};
+  gastosMes.forEach(e=>{ct[e.category]=(ct[e.category]||0)+e.amount;});
+  const topCats = Object.entries(ct).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([cat,val])=>`${cat}: R$${val.toFixed(2)}`).join(', ');
+
+  // Cofres
+  const totalCofresAcum = cofres.reduce((s,c)=>s+parseFloat(c.acumulado||0),0);
+  const totalCofresMeta = cofres.reduce((s,c)=>s+parseFloat(c.meta||0),0);
+
+  return `DADOS FINANCEIROS DO USUÁRIO (${mesNome} ${vd.getFullYear()}):
+- Entradas do mês: R$${totalE.toFixed(2)} (${entradasMes.length} transações)
+- Gastos do mês: R$${totalG.toFixed(2)} (${gastosMes.length} transações)
+- Saldo do mês: R$${saldo.toFixed(2)} (${saldo>=0?'POSITIVO':'NEGATIVO'})
+- Top categorias de gasto: ${topCats||'nenhum gasto'}
+- Contas pendentes: ${contasPend.length} (R$${contasPend.reduce((s,c)=>s+parseFloat(c.valor),0).toFixed(2)})
+- Contas atrasadas: ${contasAtras.length}
+- Parcelas em andamento: ${parcelasAt.length} (R$${totalParc.toFixed(2)}/mês)
+- Cofres: ${cofres.length} cofres · acumulado R$${totalCofresAcum.toFixed(2)} de R$${totalCofresMeta.toFixed(2)} em metas`;
+}
+
+async function enviarChat(pfx) {
+  const input = document.getElementById(pfx+'-chat-input');
+  const sendBtn = document.getElementById(pfx+'-chat-send');
+  if (!input) return;
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  const sugEl = document.getElementById(pfx+'-chat-suggestions');
+  if (sugEl) sugEl.innerHTML = '';
+
+  addChatMsg(pfx, 'user', texto);
+  chatHistory.push({ role:'user', content: texto });
+
+  const typingDiv = addChatMsg(pfx, 'bot', '● digitando...');
+  if (typingDiv) typingDiv.querySelector('.chat-bubble').classList.add('typing');
+
+  try {
+    const contexto = buildContexto();
+    const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada com os dados do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.
+
+${contexto}`;
+
+    // Monta mensagens com contexto embutido na primeira mensagem do usuário
+    const msgs = chatHistory.length === 1
+      ? [{ role:'user', content: `[Contexto financeiro do usuário]\n${contexto}\n\n${texto}` }]
+      : chatHistory;
+
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, messages: msgs })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(()=>({}));
+      throw new Error(err.error?.message || 'Status '+response.status);
+    }
+
+    const result = await response.json();
+    const resposta = result.content?.[0]?.text || 'Não consegui processar. Tente novamente.';
+
+    typingDiv?.remove();
+    addChatMsg(pfx, 'bot', resposta);
+    chatHistory.push({ role:'assistant', content: resposta });
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+  } catch(e) {
+    typingDiv?.remove();
+    console.error('Chat error:', e);
+    addChatMsg(pfx, 'bot', `❌ Erro: ${e.message}\n\nVerifique sua conexão e tente novamente.`);
+  }
+
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+// Auto-resize do textarea
+document.addEventListener('input', e => {
+  if (e.target.classList.contains('chat-input')) {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
+  }
+});
 
 // ══════════════════════════════════════════
 // HANDLER GLOBAL DE AÇÕES — único listener, sem duplicações

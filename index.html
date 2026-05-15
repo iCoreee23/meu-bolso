@@ -96,7 +96,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 /* ════ DRAWER MENU (compartilhado PC + Mobile) ════ */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:998;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(2px);}
 .drawer-overlay.open{opacity:1;pointer-events:all;}
-.drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:#1e293b;border-right:1px solid rgba(255,255,255,0.08);z-index:999;transform:translateX(-100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:#1e293b;border-right:1px solid rgba(255,255,255,0.08);z-index:999;transform:translateX(-100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0px);}
 .drawer.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,0.5);}
 .drawer-header{padding:1.25rem 1.25rem 0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .drawer-logo{display:flex;align-items:center;gap:10px;}
@@ -155,8 +155,9 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .mb-sync-dot.connected{background:#22c55e;box-shadow:0 0 5px rgba(34,197,94,0.5);}
 .mb-sync-dot.error{background:#f87171;}
 .mb-sync-dot.syncing{background:#fbbf24;animation:blink 1s infinite;}
-.mb-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-.mb-content-inner{padding:14px 14px 24px;}
+.mb-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:flex;flex-direction:column;}
+.mb-content-inner{padding:14px 14px 24px;flex:1;}
+.mb-content-inner:has(#mb-view-assistente.active){padding:0;overflow:hidden;display:flex;flex-direction:column;}
 .bottom-nav{display:none;}
 /* PC sync bar */
 .sync-bar{background:#1e293b;border-bottom:1px solid rgba(255,255,255,0.07);padding:7px 1.5rem;display:flex;align-items:center;gap:10px;font-size:12px;color:#94a3b8;flex-shrink:0;}
@@ -1256,8 +1257,8 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <div style="display:flex;flex-direction:column;gap:14px;" id="mb-cofre-list"></div>
       </div>
       <!-- MB ASSISTENTE -->
-      <div class="view" id="mb-view-assistente" style="display:flex;flex-direction:column;height:calc(100dvh - 60px);">
-        <div class="chat-wrap" style="height:100%;border-radius:0;border:none;">
+      <div class="view" id="mb-view-assistente" style="display:flex;flex-direction:column;flex:1;height:100%;overflow:hidden;margin:-14px -14px -24px;">
+        <div class="chat-wrap" style="height:100%;border-radius:0;border:none;border-top:1px solid rgba(255,255,255,0.07);">
           <div class="chat-header">
             <div class="chat-av" style="width:34px;height:34px;font-size:16px;">🤖</div>
             <div class="chat-info"><strong>Assessor Financeiro</strong><span>● Online · IA</span></div>
@@ -2852,7 +2853,22 @@ function mbView(name) {
   if(name==='settings') setTimeout(initContaPanel,50);
   if(name==='cartoes') setTimeout(()=>renderCartoes('mb'),50);
   if(name==='cofre') setTimeout(()=>renderCofre('mb'),50);
-  if(name==='assistente') setTimeout(()=>initChat('mb'),50);
+  if(name==='assistente') {
+    setTimeout(()=>{
+      initChat('mb');
+      // Desativa scroll do content para o chat ocupar toda a área
+      const content = document.querySelector('.mb-content');
+      if (content) { content.style.overflow = 'hidden'; content.style.display = 'flex'; content.style.flexDirection = 'column'; }
+      const inner = document.querySelector('.mb-content-inner');
+      if (inner) { inner.style.padding = '0'; inner.style.flex = '1'; inner.style.display = 'flex'; inner.style.flexDirection = 'column'; inner.style.overflow = 'hidden'; }
+    }, 50);
+  } else {
+    // Restaura scroll normal
+    const content = document.querySelector('.mb-content');
+    if (content) { content.style.overflow = 'auto'; }
+    const inner = document.querySelector('.mb-content-inner');
+    if (inner) { inner.style.padding = '14px 14px 24px'; inner.style.flex = ''; inner.style.display = ''; inner.style.flexDirection = ''; inner.style.overflow = ''; }
+  }
 }
 
 // ══════════════════════════════════════════

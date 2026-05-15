@@ -5088,13 +5088,10 @@ async function enviarChat(pfx) {
 
   try {
     const contexto = buildContexto();
-    const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada com os dados do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.
+    const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada. Use os dados financeiros reais do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.\n\n${contexto}`;
 
-${contexto}`;
-
-    // Monta mensagens com contexto embutido na primeira mensagem do usuário
     const msgs = chatHistory.length === 1
-      ? [{ role:'user', content: `[Contexto financeiro do usuário]\n${contexto}\n\n${texto}` }]
+      ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
       : chatHistory;
 
     const response = await fetch('/api/chat', {
@@ -5105,7 +5102,7 @@ ${contexto}`;
 
     if (!response.ok) {
       const err = await response.json().catch(()=>({}));
-      throw new Error(err.error?.message || 'Status '+response.status);
+      throw new Error(err.error?.message || err.message || 'Status '+response.status);
     }
 
     const result = await response.json();
@@ -5124,6 +5121,131 @@ ${contexto}`;
 
   sendBtn.disabled = false;
   input.focus();
+}
+
+function gerarRespostaLocal(texto) {
+  const vd = getViewDate();
+  const mk = monthKey(vd);
+  const mesNome = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][vd.getMonth()];
+  const nome = currentUser?.user_metadata?.full_name?.split(' ')[0] || '';
+
+  const gastosMes    = data.filter(e=>e.date.startsWith(mk));
+  const totalG       = gastosMes.reduce((s,e)=>s+e.amount,0);
+  const entradasMes  = receitas.filter(r=>r.data.startsWith(mk));
+  const totalE       = entradasMes.reduce((s,r)=>s+parseFloat(r.valor),0);
+  const contasPend   = contas.filter(c=>!c.pago);
+  const contasAtras  = contas.filter(c=>!c.pago && c.vencimento < todayStr());
+  const contasVenc5  = contas.filter(c=>!c.pago && c.vencimento >= todayStr() && c.vencimento <= (() => { const d=new Date(); d.setDate(d.getDate()+5); return d.toISOString().slice(0,10); })());
+  const parcelasAt   = parcelas.filter(p=>restantes(p)>0);
+  const totalParc    = parcelasAt.reduce((s,p)=>s+valorParcela(p),0);
+  const saldo        = totalE - totalG;
+  const gb           = getBudget('__geral__', mk);
+  const base         = gb > 0 ? gb + totalE : totalE;
+  const orcRest      = base - totalG;
+
+  // Categorias
+  const ct = {};
+  gastosMes.forEach(e=>{ct[e.category]=(ct[e.category]||0)+e.amount;});
+  const topCats = Object.entries(ct).sort((a,b)=>b[1]-a[1]);
+  const topCat = topCats[0];
+
+  // Cofres
+  const totalCofresAcum = cofres.reduce((s,c)=>s+parseFloat(c.acumulado||0),0);
+  const totalCofresMeta = cofres.reduce((s,c)=>s+parseFloat(c.meta||0),0);
+
+  const t = texto;
+
+  // ── SAUDAÇÕES ──
+  if (/^(oi|olá|ola|hey|hello|bom dia|boa tarde|boa noite|tudo bem|e aí|eai)/.test(t)) {
+    return `Olá${nome?' '+nome:''}! 👋 Tudo bem por aqui!\n\nEstou aqui para te ajudar a entender melhor suas finanças. Posso te mostrar:\n• Como estão seus gastos em ${mesNome}\n• Contas pendentes e atrasadas\n• Análise por categoria\n• Dicas personalizadas\n\nO que você quer saber?`;
+  }
+
+  // ── RESUMO / SALDO ──
+  if (/resumo|saldo|situação|situacao|como (estou|estão|tô)|visão geral|overview/.test(t)) {
+    const status = saldo >= 0 ? '✅ positivo' : '⚠️ negativo';
+    return `📊 Resumo de ${mesNome}:\n\n💵 Entradas: ${fmt(totalE)}\n💸 Gastos: ${fmt(totalG)}\n💰 Saldo: ${fmt(Math.abs(saldo))} (${status})\n\n${base > 0 ? `🎯 Orçamento restante: ${fmt(Math.max(orcRest,0))} de ${fmt(base)}` : ''}\n${contasAtras.length > 0 ? `\n⚠️ Você tem ${contasAtras.length} conta(s) atrasada(s)!` : ''}\n${parcelasAt.length > 0 ? `💳 ${parcelasAt.length} parcela(s) ativa(s): ${fmt(totalParc)}/mês` : ''}`;
+  }
+
+  // ── GASTOS ──
+  if (/gast(o|os|ei|ando)|quanto (gastei|gasto|gastou)|transaç/.test(t)) {
+    if (!gastosMes.length) return `Você ainda não registrou nenhum gasto em ${mesNome}. Comece registrando suas despesas na aba "Registrar Gasto"! 😊`;
+    const mediaGasto = totalG / new Date().getDate();
+    return `💸 Gastos em ${mesNome}:\n\nTotal: ${fmt(totalG)}\nTransações: ${gastosMes.length}\nMédia diária: ${fmt(mediaGasto)}\n\n${topCat ? `🏆 Maior categoria: ${topCat[0]} com ${fmt(topCat[1])}` : ''}\n\n${topCats.slice(0,4).map(([c,v])=>`• ${c}: ${fmt(v)}`).join('\n')}`;
+  }
+
+  // ── ENTRADAS / RECEITAS ──
+  if (/entrada|receita|salário|salario|ganho|ganh(ei|ando)|receb/.test(t)) {
+    if (!entradasMes.length) return `Você ainda não registrou nenhuma entrada em ${mesNome}. Registre seus recebimentos na aba "Entradas" para que eu possa calcular seu saldo corretamente! 💵`;
+    const cats = {};
+    entradasMes.forEach(r=>{cats[r.categoria]=(cats[r.categoria]||0)+parseFloat(r.valor);});
+    return `💵 Entradas em ${mesNome}:\n\nTotal recebido: ${fmt(totalE)}\nTransações: ${entradasMes.length}\n\n${Object.entries(cats).map(([c,v])=>`• ${c}: ${fmt(v)}`).join('\n')}`;
+  }
+
+  // ── CATEGORIAS ──
+  if (/categoria|categori|onde (gasto|gastei|mais gasto)|maior gasto/.test(t)) {
+    if (!topCats.length) return `Nenhum gasto registrado em ${mesNome} ainda! 📭`;
+    return `🏷️ Gastos por categoria em ${mesNome}:\n\n${topCats.map(([c,v],i)=>`${i===0?'🥇':i===1?'🥈':i===2?'🥉':'  '} ${c}: ${fmt(v)} (${Math.round(v/totalG*100)}%)`).join('\n')}\n\n${topCat ? `Você está gastando mais com ${topCat[0]}. ${topCat[1] > totalG*0.4 ? '⚠️ Representa mais de 40% dos seus gastos!' : 'Parece razoável! 👍'}` : ''}`;
+  }
+
+  // ── CONTAS ──
+  if (/conta|contas|pagar|venc/.test(t)) {
+    if (!contas.length) return `Você não tem contas cadastradas. Adicione suas contas fixas na aba "Contas a Pagar" para não esquecer nenhuma! 📋`;
+    const totalPend = contasPend.reduce((s,c)=>s+parseFloat(c.valor),0);
+    let resp = `📋 Contas a Pagar:\n\n`;
+    if (contasAtras.length) resp += `🔴 Atrasadas: ${contasAtras.length} (${fmt(contasAtras.reduce((s,c)=>s+parseFloat(c.valor),0))})\n`;
+    if (contasVenc5.length) resp += `⚠️ Vencem em 5 dias: ${contasVenc5.length} (${fmt(contasVenc5.reduce((s,c)=>s+parseFloat(c.valor),0))})\n`;
+    resp += `📌 Total pendente: ${fmt(totalPend)} (${contasPend.length} contas)\n`;
+    if (contasAtras.length) {
+      resp += `\n⚠️ Contas atrasadas:\n${contasAtras.map(c=>`• ${c.descricao}: ${fmt(parseFloat(c.valor))}`).join('\n')}`;
+    }
+    return resp;
+  }
+
+  // ── PARCELAS ──
+  if (/parcela|parcelado|cartão|cartao|crédito|credito/.test(t)) {
+    if (!parcelasAt.length) return `Você não tem parcelas em andamento. Ótimo sinal! 🎉`;
+    const vencHoje = parcelasAt.filter(p=>diasParaVencer(p)<=5);
+    return `💳 Parcelas em andamento:\n\n${parcelasAt.length} compra(s) parcelada(s)\nTotal mensal: ${fmt(totalParc)}\n\n${parcelasAt.slice(0,5).map(p=>`• ${p.descricao}: ${fmt(valorParcela(p))}/mês (${p.parcelas_pagas}/${p.num_parcelas} pagas)`).join('\n')}${vencHoje.length?`\n\n⚠️ Vencendo em breve: ${vencHoje.map(p=>p.descricao).join(', ')}` : ''}`;
+  }
+
+  // ── COFRE ──
+  if (/cofre|poupar|poupança|meta|economiz|guardar dinheiro/.test(t)) {
+    if (!cofres.length) return `Você ainda não criou nenhum cofre! 🏦\n\nCrie metas de economia na aba "Cofre" — por exemplo: "Viagem para Europa: R$ 5.000". Cada depósito é descontado do seu saldo automaticamente!`;
+    const pctGeral = totalCofresMeta > 0 ? Math.round(totalCofresAcum/totalCofresMeta*100) : 0;
+    return `🏦 Seus Cofres:\n\n${cofres.length} cofre(s) criado(s)\nAcumulado: ${fmt(totalCofresAcum)} de ${fmt(totalCofresMeta)} (${pctGeral}%)\n\n${cofres.map(c=>{const pct=Math.round(parseFloat(c.acumulado)/parseFloat(c.meta)*100);return `• ${c.emoji} ${c.nome}: ${fmt(parseFloat(c.acumulado))} de ${fmt(parseFloat(c.meta))} (${pct}%)`;}).join('\n')}\n\n${pctGeral < 50 ? '💪 Continue depositando para atingir suas metas!' : pctGeral < 100 ? '🚀 Você está na metade do caminho!' : '🎉 Meta(s) atingida(s)!'}`;
+  }
+
+  // ── ORÇAMENTO ──
+  if (/orçamento|orcamento|limite|renda|sobrou|sobra/.test(t)) {
+    if (base <= 0) return `Você ainda não definiu uma renda mensal ou entradas em ${mesNome}. Adicione suas entradas na aba "Entradas" ou configure sua renda em "Renda Mensal"! 🎯`;
+    const pct = Math.round(totalG/base*100);
+    return `🎯 Orçamento de ${mesNome}:\n\nBase (renda + entradas): ${fmt(base)}\nGasto até agora: ${fmt(totalG)} (${pct}%)\nRestante: ${fmt(Math.max(orcRest,0))}\n\n${pct > 90 ? '⚠️ Cuidado! Você já usou mais de 90% do orçamento!' : pct > 75 ? '⚠️ Você já usou 75% do orçamento. Fique atento!' : pct > 50 ? '👍 Você está na metade do orçamento. Bom controle!' : '✅ Ótimo! Você ainda tem bastante orçamento disponível!'}`;
+  }
+
+  // ── DICAS ──
+  if (/dica|conselho|ajuda|como economiz|poupar|melhorar/.test(t)) {
+    const dicas = [];
+    if (topCat && topCat[1] > totalG*0.4) dicas.push(`💡 Sua maior despesa é ${topCat[0]} (${Math.round(topCat[1]/totalG*100)}% do total). Tente reduzir nessa categoria.`);
+    if (contasAtras.length) dicas.push(`⚠️ Você tem ${contasAtras.length} conta(s) atrasada(s). Priorize pagá-las para evitar multas.`);
+    if (saldo < 0) dicas.push(`📉 Seu saldo está negativo em ${fmt(Math.abs(saldo))}. Tente cortar gastos não essenciais.`);
+    if (!cofres.length) dicas.push(`🏦 Crie um cofre para guardar dinheiro com meta. Mesmo R$ 50/mês faz diferença!`);
+    if (totalParc > totalE*0.3 && totalE > 0) dicas.push(`💳 Suas parcelas representam ${Math.round(totalParc/totalE*100)}% da sua renda. Evite novas compras parceladas.`);
+    dicas.push(`📊 Registre todos os gastos no app para ter uma visão mais precisa das suas finanças.`);
+    return `💡 Dicas personalizadas para você:\n\n${dicas.slice(0,4).join('\n\n')}`;
+  }
+
+  // ── COMPARAÇÃO MESES ──
+  if (/mês passado|mes passado|comparar|comparação|anterior/.test(t)) {
+    const mkAnt = monthKey(new Date(vd.getFullYear(), vd.getMonth()-1, 1));
+    const mesAntNome = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][new Date(vd.getFullYear(), vd.getMonth()-1, 1).getMonth()];
+    const gastosAnt = data.filter(e=>e.date.startsWith(mkAnt)).reduce((s,e)=>s+e.amount,0);
+    const diff = totalG - gastosAnt;
+    return `📅 Comparação:\n\n${mesAntNome}: ${fmt(gastosAnt)}\n${mesNome}: ${fmt(totalG)}\nDiferença: ${diff >= 0 ? '+' : ''}${fmt(diff)}\n\n${diff > 0 ? `📈 Você gastou ${fmt(diff)} a mais que o mês passado.` : diff < 0 ? `📉 Você gastou ${fmt(Math.abs(diff))} a menos que o mês passado. Ótimo! 🎉` : `➡️ Gastos iguais ao mês passado.`}`;
+  }
+
+  // ── RESPOSTA PADRÃO ──
+  const sugestoes = ['Como estão meus gastos este mês?', 'Tenho contas atrasadas?', 'Onde estou gastando mais?', 'Dicas para economizar', 'Resumo do meu saldo'];
+  return `Não entendi muito bem sua pergunta. 😅 Posso te ajudar com:\n\n${sugestoes.map(s=>`• ${s}`).join('\n')}\n\nTente perguntar algo relacionado às suas finanças!`;
 }
 
 // Auto-resize do textarea

@@ -5086,39 +5086,38 @@ async function enviarChat(pfx) {
   const typingDiv = addChatMsg(pfx, 'bot', '● digitando...');
   if (typingDiv) typingDiv.querySelector('.chat-bubble').classList.add('typing');
 
+  // Pequeno delay para parecer natural
+  await new Promise(r => setTimeout(r, 500));
+
   try {
-    const contexto = buildContexto();
-    const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada. Use os dados financeiros reais do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.\n\n${contexto}`;
-
-    const msgs = chatHistory.length === 1
-      ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
-      : chatHistory;
-
     let resposta = null;
 
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: systemPrompt, messages: msgs }),
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
-
-      if (response.ok) {
-        const result = await response.json();
-        resposta = result.content?.[0]?.text || null;
-      }
-    } catch(apiErr) {
-      console.warn('API indisponível, usando assistente local:', apiErr.message);
+    // Tenta API Groq com timeout de 8s
+    if (!IS_MOBILE) {
+      try {
+        const contexto = buildContexto();
+        const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada. Use os dados financeiros reais do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.\n\n${contexto}`;
+        const msgs = chatHistory.length === 1
+          ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
+          : chatHistory;
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 8000);
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: systemPrompt, messages: msgs }),
+          signal: ctrl.signal
+        });
+        clearTimeout(t);
+        if (response.ok) {
+          const result = await response.json();
+          resposta = result.content?.[0]?.text || null;
+        }
+      } catch(e) { console.warn('API falhou:', e.message); }
     }
 
-    // Fallback para assistente local se a API falhar
-    if (!resposta) {
-      resposta = gerarRespostaLocal(texto.toLowerCase());
-    }
+    // Fallback local (sempre usado no mobile, ou quando API falha)
+    if (!resposta) resposta = gerarRespostaLocal(texto.toLowerCase());
 
     typingDiv?.remove();
     addChatMsg(pfx, 'bot', resposta);
@@ -5127,13 +5126,11 @@ async function enviarChat(pfx) {
 
   } catch(e) {
     typingDiv?.remove();
-    console.error('Chat error:', e);
     const local = gerarRespostaLocal(texto.toLowerCase());
     addChatMsg(pfx, 'bot', local);
   }
 
   sendBtn.disabled = false;
-  input.focus();
 }
 
 function gerarRespostaLocal(texto) {

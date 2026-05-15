@@ -3977,44 +3977,33 @@ function switchAvatarTab(tab, btn) {
 async function salvarNome() {
   const pcInput = document.getElementById('pc-nome-input');
   const mbInput = document.getElementById('mb-nome-input');
-  const nome = (IS_MOBILE ? mbInput?.value : (pcInput?.value || mbInput?.value || '')).trim();
+  const nome = (pcInput?.value || mbInput?.value || '').trim();
   if (!nome) { toast('⚠️ Digite um nome', false); return; }
 
-  const salvar = async (token) => {
+  try {
+    // Sempre renova o token antes de salvar
+    const s = localStorage.getItem('sb_session');
+    if (s) {
+      const p = JSON.parse(s);
+      if (p.refresh_token) await refreshSession(p.refresh_token).catch(()=>{});
+    }
+
     const res = await fetch(SB_URL+'/auth/v1/user', {
       method:'PUT',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+token},
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+accessToken},
       body: JSON.stringify({ data:{ full_name: nome } })
     });
+
     if (!res.ok) {
       const err = await res.json().catch(()=>({}));
       throw new Error(err.message || 'Status '+res.status);
     }
-    return res;
-  };
-
-  try {
-    try {
-      await salvar(accessToken);
-    } catch(e) {
-      // Se foi 401 (token expirado), renova e tenta de novo
-      if (e.message.includes('401') || e.message.toLowerCase().includes('token')) {
-        const s = localStorage.getItem('sb_session');
-        if (s) {
-          const p = JSON.parse(s);
-          if (p.refresh_token) {
-            await refreshSession(p.refresh_token);
-            await salvar(accessToken);
-          } else throw e;
-        } else throw e;
-      } else throw e;
-    }
 
     if (currentUser?.user_metadata) currentUser.user_metadata.full_name = nome;
-    const s = localStorage.getItem('sb_session');
-    if (s) {
+    const sess = localStorage.getItem('sb_session');
+    if (sess) {
       try {
-        const p = JSON.parse(s);
+        const p = JSON.parse(sess);
         if (p.user?.user_metadata) p.user.user_metadata.full_name = nome;
         localStorage.setItem('sb_session', JSON.stringify(p));
       } catch {}
@@ -5058,45 +5047,38 @@ async function enviarChatTexto(pfx, texto) {
 
   await new Promise(r => setTimeout(r, 400));
 
+  let resposta = null;
+
   try {
-    let resposta = null;
-
-    // No PC tenta a API Groq primeiro
-    if (!IS_MOBILE) {
-      try {
-        const contexto = buildContexto();
-        const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada. Use os dados financeiros reais do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.\n\n${contexto}`;
-        const msgs = chatHistory.length === 1
-          ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
-          : chatHistory;
-        const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), 8000);
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ system: systemPrompt, messages: msgs }),
-          signal: ctrl.signal
-        });
-        clearTimeout(t);
-        if (response.ok) {
-          const result = await response.json();
-          resposta = result.content?.[0]?.text || null;
-        }
-      } catch(e) { console.warn('API falhou:', e.message); }
+    const contexto = buildContexto();
+    const systemPrompt = `Você é um assessor financeiro pessoal virtual do app "Meu Bolso". Responda sempre em português brasileiro de forma amigável, direta e personalizada. Use os dados financeiros reais do usuário abaixo. Use emojis moderadamente. Seja conciso (máx 3 parágrafos). Se a pergunta não for sobre finanças, redirecione gentilmente.\n\n${contexto}`;
+    const msgs = chatHistory.length === 1
+      ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
+      : chatHistory;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, messages: msgs }),
+      signal: ctrl.signal
+    });
+    clearTimeout(t);
+    if (response.ok) {
+      const result = await response.json();
+      resposta = result.content?.[0]?.text || null;
     }
-
-    // Mobile ou fallback: assistente local
-    if (!resposta) resposta = gerarRespostaLocal(texto.toLowerCase());
-
-    typingDiv?.remove();
-    addChatMsg(pfx, 'bot', resposta);
-    chatHistory.push({ role:'assistant', content: resposta });
-    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
-
   } catch(e) {
-    typingDiv?.remove();
-    addChatMsg(pfx, 'bot', gerarRespostaLocal(texto.toLowerCase()));
+    console.warn('API falhou, usando local:', e.message);
   }
+
+  // Sempre cai para local se API falhar
+  if (!resposta) resposta = gerarRespostaLocal(texto.toLowerCase());
+
+  typingDiv?.remove();
+  addChatMsg(pfx, 'bot', resposta);
+  chatHistory.push({ role:'assistant', content: resposta });
+  if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
 
   if (sendBtn) sendBtn.disabled = false;
 }

@@ -5094,19 +5094,31 @@ async function enviarChat(pfx) {
       ? [{ role:'user', content: `${contexto}\n\nPergunta: ${texto}` }]
       : chatHistory;
 
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system: systemPrompt, messages: msgs })
-    });
+    let resposta = null;
 
-    if (!response.ok) {
-      const err = await response.json().catch(()=>({}));
-      throw new Error(err.error?.message || err.message || 'Status '+response.status);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: systemPrompt, messages: msgs }),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (response.ok) {
+        const result = await response.json();
+        resposta = result.content?.[0]?.text || null;
+      }
+    } catch(apiErr) {
+      console.warn('API indisponível, usando assistente local:', apiErr.message);
     }
 
-    const result = await response.json();
-    const resposta = result.content?.[0]?.text || 'Não consegui processar. Tente novamente.';
+    // Fallback para assistente local se a API falhar
+    if (!resposta) {
+      resposta = gerarRespostaLocal(texto.toLowerCase());
+    }
 
     typingDiv?.remove();
     addChatMsg(pfx, 'bot', resposta);
@@ -5116,7 +5128,8 @@ async function enviarChat(pfx) {
   } catch(e) {
     typingDiv?.remove();
     console.error('Chat error:', e);
-    addChatMsg(pfx, 'bot', `❌ Erro: ${e.message}\n\nVerifique sua conexão e tente novamente.`);
+    const local = gerarRespostaLocal(texto.toLowerCase());
+    addChatMsg(pfx, 'bot', local);
   }
 
   sendBtn.disabled = false;

@@ -677,6 +677,43 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 .chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 1.25rem 0.75rem;}
 .chat-sug{background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 14px;font-size:12px;color:#94a3b8;cursor:pointer;transition:all 0.15s;font-family:'Sora',sans-serif;touch-action:manipulation;}
 .chat-sug:hover,.chat-sug:active{background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.3);color:#a5b4fc;}
+/* ════ AJUDA ════ */
+.ajuda-wrap{max-width:720px;margin:0 auto;}
+.ajuda-hero{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border:1px solid rgba(34,197,94,0.2);border-radius:20px;padding:1.75rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;}
+.ajuda-hero-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ajuda-hero h2{font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:4px;}
+.ajuda-hero p{font-size:13px;color:#94a3b8;line-height:1.5;}
+.ajuda-section-title{font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;margin-top:1.5rem;font-weight:600;}
+.ajuda-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;}
+.ajuda-step{display:flex;gap:14px;align-items:flex-start;background:#1e293b;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;}
+.ajuda-step:hover{border-color:rgba(34,197,94,0.3);}
+.ajuda-step.open{border-color:rgba(34,197,94,0.4);background:#0f2a1a;}
+.ajuda-step-num{width:26px;height:26px;border-radius:50%;background:#334155;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#94a3b8;flex-shrink:0;transition:all 0.2s;}
+.ajuda-step.open .ajuda-step-num{background:#22c55e;color:#fff;}
+.ajuda-step-body{flex:1;}
+.ajuda-step-title{font-size:14px;font-weight:600;color:#f1f5f9;margin-bottom:2px;}
+.ajuda-step-sub{font-size:12px;color:#64748b;}
+.ajuda-step-detail{display:none;margin-top:10px;font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;}
+.ajuda-step.open .ajuda-step-detail{display:block;}
+.ajuda-tip{background:rgba(34,197,94,0.08);border-left:3px solid #22c55e;border-radius:0 8px 8px 0;padding:8px 12px;font-size:12px;color:#86efac;margin-top:8px;line-height:1.6;}
+.faq-item{background:#1e293b;border:1px solid rgba(255,255,255,0.07);border-radius:14px;margin-bottom:6px;overflow:hidden;}
+.faq-q{padding:14px 16px;font-size:14px;font-weight:500;color:#f1f5f9;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:background 0.15s;}
+.faq-q:hover{background:rgba(255,255,255,0.03);}
+.faq-q .faq-arrow{color:#64748b;font-size:16px;transition:transform 0.2s;flex-shrink:0;}
+.faq-item.open .faq-arrow{transform:rotate(90deg);color:#22c55e;}
+.faq-a{display:none;padding:0 16px 14px;font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid rgba(255,255,255,0.06);}
+.faq-item.open .faq-a{display:block;padding-top:12px;}
+.ajuda-badge{display:inline-block;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);border-radius:100px;padding:2px 10px;font-size:11px;font-weight:600;margin:0 2px;}
+/* ════ OCULTAR VALORES ════ */
+.vals-hidden .mv,
+.vals-hidden .tx-amount,
+.vals-hidden .fatura-total,
+.vals-hidden .saldo-val,
+.vals-hidden .cofre-pct,
+.vals-hidden .cofre-stat strong { color: transparent !important; background: rgba(255,255,255,0.1); border-radius: 6px; user-select: none; }
+.vals-hidden .mv::after,
+.vals-hidden .tx-amount::after,
+.vals-hidden .fatura-total::after { content: ''; }
 </style>
 </head>
 <body>
@@ -740,6 +777,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
     <span class="sync-label" id="pc-sync-label">Conectando…</span>
     <span class="sync-time" id="pc-sync-time"></span>
     <button onclick="manualSync()" id="btn-manual-sync" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:6px;color:#94a3b8;padding:3px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;" title="Sincronizar agora">🔄 Sincronizar</button>
+    <button id="btn-hide-vals-pc" onclick="toggleHideValues()" title="Ocultar/mostrar valores" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:6px;color:#94a3b8;padding:3px 10px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;"><span id="pc-hide-icon">👁</span><span id="pc-hide-label" style="font-size:11px;">Ocultar</span></button>
     <div class="user-pill"><div class="user-av" id="pc-av">?</div><span class="user-name-pill" id="pc-uname">—</span></div>
     <button class="btn-logout-pc" onclick="doLogout()">Sair</button>
   </div>
@@ -1054,6 +1092,10 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
           </div>
         </div>
       </div>
+      <!-- PC AJUDA -->
+      <div class="view" id="pc-view-ajuda">
+        <div class="ajuda-wrap" id="pc-ajuda-content"></div>
+      </div>
       <!-- PC EXPORT -->
       <div class="view" id="pc-view-export">
         <div class="export-card">
@@ -1084,7 +1126,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <div class="mb-title" id="mb-page-title">Início</div>
     </div>
     <div class="mb-topbar-right">
-      <button id="btn-hide-vals-mb" onclick="toggleHideValues()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;">👁</button>
+      <button id="btn-hide-vals-mb" onclick="toggleHideValues()" title="Ocultar/mostrar valores" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:4px;line-height:1;"><span id="mb-hide-icon">👁</span></button>
       <div class="mb-sync-dot syncing" id="mb-sync-dot"></div>
       <button id="mb-sync-btn" onclick="mobileSync()" style="background:none;border:1px solid rgba(255,255,255,0.13);border-radius:20px;color:#94a3b8;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;">
         <span id="mb-sync-icon">🔄</span><span id="mb-sync-text">Sync</span>
@@ -1279,6 +1321,10 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
             <button class="btn-chat-send" id="mb-chat-send" onclick="enviarChat('mb')">➤</button>
           </div>
         </div>
+      </div>
+      <!-- MB AJUDA -->
+      <div class="view" id="mb-view-ajuda">
+        <div class="ajuda-wrap" id="mb-ajuda-content"></div>
       </div>
       <!-- MB SETTINGS -->
       <div class="view" id="mb-view-settings">
@@ -1572,6 +1618,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
 
     <div class="drawer-section">Outros</div>
     <button class="drawer-item" id="di-export" onclick="navTo('export')" style="display:none;" class="pc-only"><span class="di-icon">📤</span><span class="di-label">Exportar</span></button>
+    <button class="drawer-item" id="di-ajuda" onclick="navTo('ajuda')"><span class="di-icon">❔</span><span class="di-label">Ajuda</span></button>
     <button class="drawer-item" id="di-conta" onclick="navTo('conta')"><span class="di-icon">⚙️</span><span class="di-label">Minha Conta</span></button>
   </div>
   <div class="drawer-footer">
@@ -1931,6 +1978,9 @@ function launchApp() {
   const email = currentUser?.email || '';
   const name = currentUser?.user_metadata?.full_name || email.split('@')[0] || 'Usuário';
   const initials = name.slice(0,2).toUpperCase();
+
+  // Aplica preferência de ocultar valores salva
+  applyHideValues();
 
   if (IS_MOBILE) {
     document.getElementById('app-mobile').classList.add('show');
@@ -2764,8 +2814,32 @@ function setTab(tab, pfx) {
 }
 
 // ══════════════════════════════════════════
-// DRAWER MENU
+// OCULTAR VALORES
 // ══════════════════════════════════════════
+let valuesHidden = localStorage.getItem('mb_hide_values') === '1';
+
+function applyHideValues() {
+  const apps = [document.getElementById('app-pc'), document.getElementById('app-mobile')];
+  apps.forEach(app => { if (app) app.classList.toggle('vals-hidden', valuesHidden); });
+
+  // Ícone e label PC
+  const pcIcon = document.getElementById('pc-hide-icon');
+  const pcLabel = document.getElementById('pc-hide-label');
+  if (pcIcon) pcIcon.textContent = valuesHidden ? '🙈' : '👁';
+  if (pcLabel) pcLabel.textContent = valuesHidden ? 'Mostrar' : 'Ocultar';
+
+  // Ícone mobile
+  const mbIcon = document.getElementById('mb-hide-icon');
+  if (mbIcon) mbIcon.textContent = valuesHidden ? '🙈' : '👁';
+}
+
+function toggleHideValues() {
+  valuesHidden = !valuesHidden;
+  localStorage.setItem('mb_hide_values', valuesHidden ? '1' : '0');
+  applyHideValues();
+}
+
+
 function toggleDrawer() {
   const drawer = document.getElementById('drawer');
   const overlay = document.getElementById('drawer-overlay');
@@ -2812,7 +2886,7 @@ function navTo(name) {
       dashboard:'Início', add:'Novo Gasto', receitas:'Entradas',
       contas:'Contas a Pagar', cartoes:'Cartão de Crédito',
       budget:'Renda Mensal', balanco:'Balanço Anual', conta:'Minha Conta',
-      export:'Exportar', cofre:'Cofre', assistente:'Assessor IA'
+      export:'Exportar', cofre:'Cofre', assistente:'Assessor IA', ajuda:'Ajuda'
     };
     const tEl = document.getElementById('mb-page-title');
     if (tEl) tEl.textContent = titles[target] || target;
@@ -2843,7 +2917,7 @@ function pcView(name, el) {
   const t=document.getElementById('pc-view-'+name); if(t){t.classList.add('active');t.style.display='block';}
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el) el.classList.add('active');
-  const titles={dashboard:['Dashboard','Visão geral dos seus gastos'],receitas:['Entradas','Registre suas receitas'],contas:['Contas a Pagar','Checklist de contas do mês'],parcelas:['Parcelas','Controle de compras parceladas'],cartoes:['Cartão de Crédito','Faturas e gastos no crédito'],budget:['Renda Mensal','Defina sua renda e limites'],balanco:['Balanço Anual','Resumo financeiro do ano'],export:['Exportar','Backup e exportação'],conta:['Minha Conta','Configurações e perfil'],cofre:['Cofre','Guarde dinheiro com metas']};
+  const titles={dashboard:['Dashboard','Visão geral dos seus gastos'],receitas:['Entradas','Registre suas receitas'],contas:['Contas a Pagar','Checklist de contas do mês'],parcelas:['Parcelas','Controle de compras parceladas'],cartoes:['Cartão de Crédito','Faturas e gastos no crédito'],budget:['Renda Mensal','Defina sua renda e limites'],balanco:['Balanço Anual','Resumo financeiro do ano'],export:['Exportar','Backup e exportação'],conta:['Minha Conta','Configurações e perfil'],cofre:['Cofre','Guarde dinheiro com metas'],assistente:['Assessor IA','Seu consultor financeiro virtual'],ajuda:['Ajuda','Passo a passo e dúvidas frequentes']};
   const tt=titles[name]||[name,''];
   set('pc-page-title',tt[0]); set('pc-page-sub',tt[1]);
   document.getElementById('pc-monnav').style.display = name==='dashboard'?'flex':'none';
@@ -2857,6 +2931,7 @@ function pcView(name, el) {
   if(name==='cartoes') renderCartoes('pc');
   if(name==='cofre') renderCofre('pc');
   if(name==='assistente') { initChat('pc'); }
+  if(name==='ajuda') renderAjuda('pc');
   if(window.innerWidth<640) document.getElementById('pc-sidebar').classList.remove('open');
 }
 
@@ -2877,6 +2952,7 @@ function mbView(name) {
   if(name==='cartoes') setTimeout(()=>renderCartoes('mb'),50);
   if(name==='cofre') setTimeout(()=>renderCofre('mb'),50);
   if(name==='assistente') setTimeout(()=>initChat('mb'),50);
+  if(name==='ajuda') setTimeout(()=>renderAjuda('mb'),50);
 }
 
 // ══════════════════════════════════════════
@@ -4853,8 +4929,147 @@ document.getElementById('modal-cartao')?.addEventListener('click', function(e) {
 
 
 // ══════════════════════════════════════════
-// COFRE
+// AJUDA
 // ══════════════════════════════════════════
+function renderAjuda(pfx) {
+  const el = document.getElementById(pfx+'-ajuda-content');
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="ajuda-hero">
+      <div class="ajuda-hero-icon">❔</div>
+      <div>
+        <h2>Central de Ajuda</h2>
+        <p>Passo a passo de como usar o Meu Bolso e respostas para as dúvidas mais comuns.</p>
+      </div>
+    </div>
+
+    <div class="ajuda-section-title">🚀 Primeiros Passos</div>
+    <div class="ajuda-steps">
+      ${ajudaStep(1,'Configure sua renda mensal','Defina quanto você ganha por mês',
+        `Vá em <span class="ajuda-badge">☰ Menu</span> → <span class="ajuda-badge">🎯 Renda Mensal</span> e informe sua renda fixa. Você também pode definir limites por categoria (Alimentação, Transporte, etc.).<br><br>Sem isso, o card "Orçamento restante" no dashboard não consegue calcular o quanto sobrou no mês.`
+      )}
+      ${ajudaStep(2,'Registre suas entradas','Informe seu salário e outras receitas',
+        `Vá em <span class="ajuda-badge">☰ Menu</span> → <span class="ajuda-badge">💵 Entradas</span> e registre cada receita com descrição, valor, data e categoria.<br><br><div class="ajuda-tip">💡 Use o campo "Mês de competência" se o dinheiro recebido é para cobrir gastos de outro mês. Ex: recebeu salário dia 28/mai mas é para pagar as contas de junho → preencha competência como "junho".</div>`
+      )}
+      ${ajudaStep(3,'Registre seus gastos','Anote cada despesa no dia a dia',
+        `Clique em <span class="ajuda-badge">➕ Registrar Gasto</span> no menu e preencha:<br><br>
+        • <strong style="color:#f1f5f9;">Descrição</strong> — nome do gasto (ex: "Supermercado")<br>
+        • <strong style="color:#f1f5f9;">Valor</strong> — quanto foi gasto<br>
+        • <strong style="color:#f1f5f9;">Categoria</strong> — Alimentação, Saúde, Transporte...<br>
+        • <strong style="color:#f1f5f9;">Pagamento</strong> — Pix, Débito, Crédito ou Dinheiro<br><br>
+        <div class="ajuda-tip">💡 Se pagar no crédito, selecione o cartão para o gasto entrar na fatura correta.</div>`
+      )}
+    </div>
+
+    <div class="ajuda-section-title">💳 Cartão de Crédito</div>
+    <div class="ajuda-steps">
+      ${ajudaStep(4,'Cadastre seu cartão','Configure dias de fechamento e vencimento',
+        `Vá em <span class="ajuda-badge">☰ Menu</span> → <span class="ajuda-badge">💳 Cartão de Crédito</span> → clique em <span class="ajuda-badge">＋ Cadastrar cartão</span>. Informe o nome, dia de fechamento e dia de vencimento da fatura.`
+      )}
+      ${ajudaStep(5,'Acompanhe as faturas','Veja todos os gastos no crédito agrupados',
+        `Na tela do Cartão de Crédito, cada cartão mostra suas faturas. Quando quiser pagar, clique em <span class="ajuda-badge">📋 Gerar conta</span> — isso cria automaticamente uma entrada em "Contas a Pagar" com o valor total da fatura.<br><br>Após gerado, o botão vira <strong style="color:#22c55e;">✅ Conta gerada</strong> para não duplicar.`
+      )}
+      ${ajudaStep(6,'Gerencie parcelas','Controle compras parceladas',
+        `As parcelas aparecem na parte inferior da tela de Cartão de Crédito. Para cada parcela você pode:<br><br>
+        • <strong style="color:#f1f5f9;">✓ Pagar</strong> — registra o pagamento e avança automaticamente<br>
+        • <strong style="color:#f1f5f9;">✏️ Editar</strong> — altera nome, valor ou data de vencimento<br>
+        • <strong style="color:#f1f5f9;">🗑 Excluir</strong> — remove a parcela`
+      )}
+    </div>
+
+    <div class="ajuda-section-title">📋 Contas a Pagar</div>
+    <div class="ajuda-steps">
+      ${ajudaStep(7,'Cadastre suas contas fixas','Não esqueça nenhum boleto ou conta',
+        `Vá em <span class="ajuda-badge">☰ Menu</span> → <span class="ajuda-badge">📋 Contas a Pagar</span> e clique em <span class="ajuda-badge">＋ Nova conta</span>. Preencha descrição, valor, vencimento e categoria.<br><br><div class="ajuda-tip">💡 O app avisa automaticamente quando há contas vencidas ou vencendo em 5 dias.</div>`
+      )}
+      ${ajudaStep(8,'Marque como paga','O valor é descontado do orçamento automaticamente',
+        `Clique no botão <strong style="color:#22c55e;">✓</strong> ao lado da conta para marcá-la como paga. O saldo e o orçamento restante são atualizados imediatamente.<br><br>Para desfazer, clique novamente no mesmo botão.`
+      )}
+    </div>
+
+    <div class="ajuda-section-title">🏦 Cofre de Economia</div>
+    <div class="ajuda-steps">
+      ${ajudaStep(9,'Crie uma meta de economia','Guarde dinheiro para um objetivo',
+        `Vá em <span class="ajuda-badge">☰ Menu</span> → <span class="ajuda-badge">🏦 Cofre</span> → <span class="ajuda-badge">＋ Novo cofre</span>. Escolha um emoji, nome e defina a meta em R$.<br><br>
+        Exemplos: Viagem para Europa 🏖️, Carro novo 🚗, Reserva de emergência 💊`
+      )}
+      ${ajudaStep(10,'Deposite no cofre','O valor é descontado do seu saldo do mês',
+        `Clique em <span class="ajuda-badge">＋ Depositar</span> no card do cofre. Informe valor, descrição e data.<br><br><div class="ajuda-tip">💡 O app não permite depositar mais do que o saldo disponível no mês para evitar orçamento negativo.</div>`
+      )}
+    </div>
+
+    <div class="ajuda-section-title">📅 Mês de Competência</div>
+    <div class="ajuda-steps">
+      ${ajudaStep(11,'O que é o Mês de Competência?','Faça o lançamento impactar no mês certo',
+        `É o mês que um lançamento deve impactar no orçamento, independente da data real de pagamento. Disponível em gastos, entradas e contas a pagar — inclusive na edição individual.<br><br>
+        <strong style="color:#f1f5f9;">Exemplo prático:</strong><br>
+        Você recebe o salário dia 28/mai para pagar as contas de junho. Registre a entrada em maio, mas coloque competência como <em>junho</em> — o valor só aparece no orçamento de junho.<br><br>
+        <div class="ajuda-tip">💡 Se deixar em branco, o app usa automaticamente o mês da data do lançamento.</div>`
+      )}
+    </div>
+
+    <div class="ajuda-section-title">❓ Dúvidas frequentes</div>
+    <div style="margin-bottom:1.5rem;">
+      ${faqItem('Por que o orçamento restante não está atualizando?',
+        'Verifique se você configurou a renda mensal em ☰ Menu → Renda Mensal. Sem isso, o app não consegue calcular o orçamento. Também certifique-se de que suas entradas do mês estão registradas.'
+      )}
+      ${faqItem('Paguei uma conta mas o saldo não mudou.',
+        'Ao marcar uma conta como paga (clicando no ✓), o saldo é atualizado automaticamente. Se não aconteceu, tente sincronizar clicando em 🔄 Sync na topbar.'
+      )}
+      ${faqItem('Gerei a conta da fatura mas ela não aparece em Contas a Pagar.',
+        'Após clicar em "Gerar conta" na fatura, vá em ☰ Menu → Contas a Pagar. A conta é criada com o nome "Fatura [Nome do Cartão] · [Mês]". Se não aparecer, clique em Sync.'
+      )}
+      ${faqItem('Como editar um lançamento já registrado?',
+        'Em qualquer tela de listagem (transações, entradas, contas), clique no ✏️ ao lado do lançamento. Você pode editar todos os campos, incluindo o mês de competência.'
+      )}
+      ${faqItem('Posso usar o app em vários dispositivos?',
+        'Sim! O Meu Bolso sincroniza em tempo real. Faça login com a mesma conta em qualquer dispositivo e os dados ficam sempre atualizados.'
+      )}
+      ${faqItem('O que faz o Assessor IA?',
+        'O Assessor IA tem acesso aos seus dados financeiros reais e responde perguntas em linguagem natural. Você pode perguntar "como estão meus gastos?", "onde gasto mais?", "tenho contas atrasadas?" e receber análises personalizadas. Acesse em ☰ Menu → 🤖 Assessor IA.'
+      )}
+      ${faqItem('Como salvar o app na tela inicial do celular?',
+        'No iPhone: abra no Safari → toque em Compartilhar (↑) → "Adicionar à Tela de Início". No Android: abra no Chrome → menu (⋮) → "Adicionar à tela inicial". O app vai funcionar como um aplicativo nativo.'
+      )}
+      ${faqItem('Por que aparece o badge 📅 em algumas transações?',
+        'Esse badge azul indica que o mês de competência é diferente do mês de pagamento. Significa que o lançamento foi pago em um mês mas está sendo contabilizado em outro. Você pode editar o lançamento para ajustar.'
+      )}
+    </div>
+  `;
+
+  // Adiciona eventos de accordion
+  el.querySelectorAll('.ajuda-step').forEach(s => {
+    s.addEventListener('click', () => {
+      const wasOpen = s.classList.contains('open');
+      el.querySelectorAll('.ajuda-step').forEach(x => x.classList.remove('open'));
+      if (!wasOpen) s.classList.add('open');
+    });
+  });
+  el.querySelectorAll('.faq-item').forEach(f => {
+    f.querySelector('.faq-q').addEventListener('click', () => f.classList.toggle('open'));
+  });
+}
+
+function ajudaStep(num, title, sub, detail) {
+  return `<div class="ajuda-step">
+    <div class="ajuda-step-num">${num}</div>
+    <div class="ajuda-step-body">
+      <div class="ajuda-step-title">${title}</div>
+      <div class="ajuda-step-sub">${sub}</div>
+      <div class="ajuda-step-detail">${detail}</div>
+    </div>
+  </div>`;
+}
+
+function faqItem(q, a) {
+  return `<div class="faq-item">
+    <div class="faq-q">${q}<span class="faq-arrow">›</span></div>
+    <div class="faq-a">${a}</div>
+  </div>`;
+}
+
+
 const COFRE_CORES = ['#22c55e','#3b82f6','#f87171','#a78bfa','#fbbf24','#f472b6','#2dd4bf','#fb923c','#60a5fa','#34d399'];
 const COFRE_EMOJIS = ['🏦','🚀','✈️','🏠','🚗','📱','💻','🎓','💍','🏖️','🎮','💪','🐶','👶','💊','🎵','🛍️','🌍','⚽','🎯'];
 

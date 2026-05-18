@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Meu Bolso"/>
 <meta name="theme-color" content="#0f172a"/>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2322c55e'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' font-family='Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif'%3E%F0%9F%92%B0%3C/text%3E%3C/svg%3E"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2322c55e'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' font-family='Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif'%3E%F0%9F%92%B0%3C/text%3E%3C/svg%3E"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <link rel="manifest" href="/manifest.json"/>
 <title>Meu Bolso</title>
@@ -815,6 +815,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
             <div class="field"><label>Descrição</label><input type="text" id="pc-desc" placeholder="Ex: Supermercado…"/></div>
             <div class="field"><label>Valor (R$)</label><input type="number" id="pc-amt" placeholder="0,00" min="0" step="0.01"/></div>
             <div class="field"><label>Data</label><input type="date" id="pc-date"/></div>
+            <div class="field"><label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label><input type="month" id="pc-competencia" title="Deixe em branco para usar o mês da data"/></div>
             <div class="field"><label>Categoria</label>
               <select id="pc-cat">
                 <option value="Alimentação">🍽 Alimentação</option><option value="Supermercado">🛒 Supermercado</option>
@@ -1150,6 +1151,11 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
             <div class="mb-field"><label>Valor (R$)</label><input type="number" id="mb-amt" placeholder="0,00" min="0" step="0.01" inputmode="decimal"/></div>
             <div class="mb-field"><label>Data</label><input type="date" id="mb-date"/></div>
           </div>
+          <div class="mb-field">
+            <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+            <input type="month" id="mb-competencia" style="width:100%;background:#1e293b;border:1px solid rgba(255,255,255,0.13);border-radius:12px;padding:12px 14px;font-size:16px;color:#f1f5f9;font-family:'Sora',sans-serif;outline:none;-webkit-appearance:none;" placeholder="Deixe em branco para usar mês da data"/>
+            <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que este gasto deve impactar no orçamento</div>
+          </div>
           <div class="mb-field"><label>Categoria</label>
             <select id="mb-cat">
               <option value="Alimentação">🍽 Alimentação</option><option value="Supermercado">🛒 Supermercado</option>
@@ -1376,6 +1382,11 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <option value="Outros">📦 Outros</option>
       </select>
     </div>
+    <div class="modal-field">
+      <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+      <input type="month" id="mr-competencia"/>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que esta entrada deve impactar no orçamento</div>
+    </div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="fecharModal('modal-receita')">Cancelar</button>
       <button class="btn-modal-confirm" id="btn-salvar-receita" onclick="salvarReceita()">💾 Salvar</button>
@@ -1406,6 +1417,11 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <option value="Streaming">🎬 Streaming</option>
         <option value="Outros">📦 Outros</option>
       </select>
+    </div>
+    <div class="modal-field">
+      <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+      <input type="month" id="mc-competencia"/>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que esta conta deve impactar no orçamento</div>
     </div>
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="fecharModal('modal-conta')">Cancelar</button>
@@ -2125,7 +2141,7 @@ async function fullSync() {
     try { cofreDepRows = await sbFetch('cofre_depositos?select=*&order=data.desc'); }
     catch(e) { console.warn('cofre_depositos falhou:', e.message); cofreDepRows = []; }
 
-    data = rows.map(r=>({id:r.id,description:r.description,amount:parseFloat(r.amount),date:r.date,category:r.category,payment:r.payment||'Pix',cartao_id:r.cartao_id||null}));
+    data = rows.map(r=>({id:r.id,description:r.description,amount:parseFloat(r.amount),date:r.date,category:r.category,payment:r.payment||'Pix',cartao_id:r.cartao_id||null,competencia:r.competencia||null}));
     budgets = {};
     (budgetRows||[]).forEach(r=>{
       const m = r.mes || monthKey(new Date());
@@ -2323,16 +2339,19 @@ async function addExpense(src) {
   const cat  = document.getElementById(src+'-cat').value;
   const pay  = document.getElementById(src+'-pay')?.value || 'Pix';
   const cartaoId = pay==='Crédito' ? (document.getElementById(src+'-cartao')?.value||null) : null;
+  const competencia = document.getElementById(src+'-competencia')?.value || null;
   if (!desc||!amt||!date||isNaN(amt)||amt<=0) { toast('⚠️ Preencha todos os campos',false); return; }
   const btn = document.getElementById(src+'-btn-add'); btn.disabled=true;
   try {
     const body = {description:desc,amount:amt,date,category:cat,payment:pay};
     if (cartaoId) body.cartao_id = cartaoId;
+    if (competencia) body.competencia = competencia;
     const r = await sbFetch('gastos',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(body)});
     const ins = Array.isArray(r)?r[0]:r;
-    if (ins) data.unshift({id:ins.id,description:ins.description,amount:parseFloat(ins.amount),date:ins.date,category:ins.category,payment:ins.payment,cartao_id:ins.cartao_id||null});
+    if (ins) data.unshift({id:ins.id,description:ins.description,amount:parseFloat(ins.amount),date:ins.date,category:ins.category,payment:ins.payment,cartao_id:ins.cartao_id||null,competencia:ins.competencia||null});
     document.getElementById(src+'-desc').value='';
     document.getElementById(src+'-amt').value='';
+    if (document.getElementById(src+'-competencia')) document.getElementById(src+'-competencia').value='';
     setSyncTime(); render(); toast('✅ Gasto adicionado!');
     if (src==='mb') mbView('home');
   } catch(e) { toast('❌ '+e.message,false); }
@@ -2374,11 +2393,12 @@ function render() {
   const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const mshort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const mk = monthKey(vd);
-  const md = data.filter(e=>e.date.startsWith(mk));
+  // Filtra gastos do mês — usa competencia se definida, senão usa a data
+  const md = data.filter(e=>(e.competencia || e.date.slice(0,7)) === mk);
   const totalGastos = md.reduce((s,e)=>s+e.amount,0);
 
   // Inclui contas pagas e parcelas no total do mês
-  const contasPagasMes  = contas.filter(c=>c.pago && c.vencimento.startsWith(mk)).reduce((s,c)=>s+parseFloat(c.valor),0);
+  const contasPagasMes  = contas.filter(c=>c.pago && (c.competencia||c.vencimento.slice(0,7))===mk).reduce((s,c)=>s+parseFloat(c.valor),0);
   const parcelasMes     = calcParcelasMes(mk);
   const total           = totalGastos + contasPagasMes + parcelasMes;
 
@@ -2420,7 +2440,7 @@ function render() {
     set('pc-m-topval', top?fmt(top[1]):'—');
 
     // Orçamento restante = entradas reais + renda manual - total (gastos + contas + parcelas + cofre)
-    const entradasMes = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor),0);
+    const entradasMes = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor),0);
     const cofreMes    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
     const totalComCofre = total + cofreMes;
     const base = gb > 0 ? gb + entradasMes : entradasMes;
@@ -2471,7 +2491,7 @@ function render() {
     set('mb-m-top', top?(CATS[top[0]]?.icon||'')+' '+top[0]:'—');
     set('mb-m-topval', top?fmt(top[1]):'—');
 
-    const entradasMesMb = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor),0);
+    const entradasMesMb = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor),0);
     const cofreMesMb    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
     const totalComCofreMb = total + cofreMesMb;
     const baseMb = gb > 0 ? gb + entradasMesMb : entradasMesMb;
@@ -2583,7 +2603,7 @@ function renderList() {
   if (!items.length) { el.innerHTML='<div class="empty-state"><div class="ei">🧾</div><p>Nenhum gasto encontrado</p></div>'; return; }
   const szCls = IS_MOBILE ? 'sz-mb' : 'sz-pc';
   const dateFn = IS_MOBILE ? fmtDateShort : fmtDate;
-  el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" data-action="edit-gasto" data-id="${e.id}">✏️</button><button class="tx-del" data-action="del-gasto" data-id="${e.id}">✕</button></div></div>`; }).join('');
+  el.innerHTML = items.map(e=>{ const i=CATS[e.category]||{color:'#888',icon:'📦'}; const payIcon={'Pix':'💠','Dinheiro':'💵','Débito':'💳','Crédito':'🏦'}[e.payment]||''; const compBadge = e.competencia ? ` · <span style="color:#60a5fa;font-size:10px;">📅 ${e.competencia}</span>` : ''; return `<div class="tx-item"><div class="tx-icon ${szCls}" style="background:${i.color}22;">${i.icon}</div><div class="tx-info"><div class="tx-desc">${e.description}</div><div class="tx-meta">${dateFn(e.date)} · ${e.category}${payIcon?' · '+payIcon+' '+e.payment:''}${compBadge}</div></div><div class="tx-right"><div class="tx-amount">${fmt(e.amount)}</div><button class="btn-tx-edit" data-action="edit-gasto" data-id="${e.id}">✏️</button><button class="tx-del" data-action="del-gasto" data-id="${e.id}">✕</button></div></div>`; }).join('');
 }
 
 function renderSidebarCats(ct) {
@@ -3187,12 +3207,11 @@ async function loadContas() {
 // ── RENDER SALDO ──
 function renderSaldo() {
   const vd = getViewDate(), mk = monthKey(vd);
-  const totalGastos   = data.filter(e=>e.date.startsWith(mk)).reduce((s,e)=>s+e.amount, 0);
-  const totalContas   = contas.filter(c=>c.pago && c.vencimento.startsWith(mk)).reduce((s,c)=>s+parseFloat(c.valor), 0);
-  // Parcelas: soma valor de cada parcela paga no mês atual (data_inicio + parcelas_pagas)
+  const totalGastos   = data.filter(e=>(e.competencia||e.date.slice(0,7))===mk).reduce((s,e)=>s+e.amount, 0);
+  const totalContas   = contas.filter(c=>c.pago && (c.competencia||c.vencimento.slice(0,7))===mk).reduce((s,c)=>s+parseFloat(c.valor), 0);
   const totalParcelas = calcParcelasMes(mk);
   const totalCofre    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor), 0);
-  const totalEntradas = receitas.filter(r=>r.data.startsWith(mk)).reduce((s,r)=>s+parseFloat(r.valor), 0);
+  const totalEntradas = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor), 0);
   const totalSaidas   = totalGastos + totalContas + totalParcelas + totalCofre;
   const saldo         = totalEntradas - totalSaidas;
   const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
@@ -3251,7 +3270,7 @@ function renderReceitas(pfx) {
         <div class="fin-icon" style="background:${info.color}22;">${info.icon}</div>
         <div class="fin-info"><div class="fin-desc">${r.descricao}</div><div class="fin-meta">${fmtDate(r.data)} · ${r.categoria}</div></div>
         <div class="fin-val green">${fmt(parseFloat(r.valor))}</div>
-        <div class="fin-actions"><button class="btn-fin-del" onclick="delReceita('${r.id}')">🗑</button></div>
+        <div class="fin-actions"><button class="btn-fin-edit" data-action="edit-receita" data-id="${r.id}">✏️</button><button class="btn-fin-del" onclick="delReceita('${r.id}')">🗑</button></div>
       </div>`;
     }).join('');
   }
@@ -3401,6 +3420,7 @@ function abrirModalReceita() {
   document.getElementById('mr-desc').value = '';
   document.getElementById('mr-val').value = '';
   document.getElementById('mr-data').value = todayStr();
+  const mc = document.getElementById('mr-competencia'); if(mc) mc.value='';
   document.getElementById('modal-receita').classList.add('open');
   setTimeout(()=>document.getElementById('mr-desc').focus(),100);
 }
@@ -3409,10 +3429,13 @@ async function salvarReceita() {
   const val = parseFloat(document.getElementById('mr-val').value);
   const data_r = document.getElementById('mr-data').value;
   const cat = document.getElementById('mr-cat').value;
+  const competencia = document.getElementById('mr-competencia')?.value || null;
   if (!desc||!val||!data_r||isNaN(val)||val<=0) { toast('⚠️ Preencha todos os campos',false); return; }
   const btn = document.getElementById('btn-salvar-receita'); btn.disabled=true; btn.textContent='Salvando…';
   try {
-    const r = await sbFetch('receitas', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({descricao:desc,valor:val,data:data_r,categoria:cat}) });
+    const body = {descricao:desc,valor:val,data:data_r,categoria:cat};
+    if (competencia) body.competencia = competencia;
+    const r = await sbFetch('receitas', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(body) });
     const ins = Array.isArray(r)?r[0]:r;
     if (ins) receitas.unshift(ins);
     fecharModal('modal-receita');
@@ -3421,6 +3444,37 @@ async function salvarReceita() {
   } catch(e) { toast('❌ '+e.message,false); }
   btn.disabled=false; btn.textContent='💾 Salvar';
 }
+// ── EDITAR RECEITA ──
+function editarReceita(id) {
+  const r = receitas.find(x=>x.id===id); if(!r) return;
+  const catOpts = Object.keys(CAT_RECEITA).map(c=>`<option value="${c}"${c===r.categoria?' selected':''}>${CAT_RECEITA[c].icon} ${c}</option>`).join('');
+  abrirModalEdit('✏️ Editar entrada', `
+    <div class="modal-field"><label>Descrição</label><input type="text" id="edit-desc" value="${r.descricao}"/></div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Valor (R$)</label><input type="number" id="edit-amt" value="${r.valor}" min="0" step="0.01" inputmode="decimal"/></div>
+      <div class="modal-field"><label>Data</label><input type="date" id="edit-date" value="${r.data}"/></div>
+    </div>
+    <div class="modal-field"><label>Categoria</label><select id="edit-cat">${catOpts}</select></div>
+    <div class="modal-field">
+      <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+      <input type="month" id="edit-competencia" value="${r.competencia||''}"/>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que esta entrada deve impactar no orçamento</div>
+    </div>`, {type:'receita', id});
+}
+async function salvarEdicaoReceita() {
+  const id = editContext.id;
+  const desc = document.getElementById('edit-desc').value.trim();
+  const val  = parseFloat(document.getElementById('edit-amt').value);
+  const data_r = document.getElementById('edit-date').value;
+  const cat  = document.getElementById('edit-cat').value;
+  const competencia = document.getElementById('edit-competencia')?.value || null;
+  if (!desc||!val||!data_r) throw new Error('Preencha todos os campos');
+  await sbFetch('receitas?id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({descricao:desc,valor:val,data:data_r,categoria:cat,competencia:competencia||null})});
+  const i = receitas.findIndex(x=>x.id===id);
+  if(i>=0) receitas[i] = {...receitas[i],descricao:desc,valor:val,data:data_r,categoria:cat,competencia:competencia||null};
+  renderSaldo(); renderReceitas(IS_MOBILE?'mb':'pc');
+}
+
 async function delReceita(id) {
   if (!confirm('Excluir esta entrada?')) return;
   try {
@@ -3436,6 +3490,7 @@ function abrirModalConta() {
   document.getElementById('mc-desc').value = '';
   document.getElementById('mc-val').value = '';
   document.getElementById('mc-data').value = todayStr();
+  const mc = document.getElementById('mc-competencia'); if(mc) mc.value='';
   document.getElementById('modal-conta').classList.add('open');
   setTimeout(()=>document.getElementById('mc-desc').focus(),100);
 }
@@ -3444,10 +3499,13 @@ async function salvarConta() {
   const val = parseFloat(document.getElementById('mc-val').value);
   const data_c = document.getElementById('mc-data').value;
   const cat = document.getElementById('mc-cat').value;
+  const competencia = document.getElementById('mc-competencia')?.value || null;
   if (!desc||!val||!data_c||isNaN(val)||val<=0) { toast('⚠️ Preencha todos os campos',false); return; }
   const btn = document.getElementById('btn-salvar-conta'); btn.disabled=true; btn.textContent='Salvando…';
   try {
-    const r = await sbFetch('contas', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({descricao:desc,valor:val,vencimento:data_c,categoria:cat,pago:false}) });
+    const body = {descricao:desc,valor:val,vencimento:data_c,categoria:cat,pago:false};
+    if (competencia) body.competencia = competencia;
+    const r = await sbFetch('contas', { method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(body) });
     const ins = Array.isArray(r)?r[0]:r;
     if (ins) contas.push(ins);
     fecharModal('modal-conta');
@@ -3461,6 +3519,7 @@ async function toggleConta(id, pago) {
     await sbFetch('contas?id=eq.'+id, { method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({pago}) });
     const c = contas.find(c=>c.id===id); if(c) c.pago = pago;
     renderContas(IS_MOBILE?'mb':'pc');
+    render(); // atualiza saldo e orçamento restante
     toast(pago ? '✅ Conta marcada como paga!' : '↩️ Marcada como pendente');
   } catch(e) { toast('❌ Erro',false); }
 }
@@ -4400,6 +4459,7 @@ async function confirmarEdicao() {
   try {
     if (editContext.type === 'gasto') await salvarEdicaoGasto();
     else if (editContext.type === 'conta') await salvarEdicaoConta();
+    else if (editContext.type === 'receita') await salvarEdicaoReceita();
     else if (editContext.type === 'parcela') await salvarEdicaoParcela();
     fecharModal('modal-edit');
     toast('✅ Atualizado!');
@@ -4427,6 +4487,11 @@ function editarGasto(id) {
     <div class="modal-field" id="edit-cartao-wrap" style="display:${isCredito?'block':'none'}">
       <label>Cartão de crédito</label>
       <select id="edit-cartao" style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,0.13);border-radius:12px;padding:12px 14px;font-size:15px;color:#f1f5f9;font-family:'Sora',sans-serif;outline:none;-webkit-appearance:none;">${cartaoOpts}</select>
+    </div>
+    <div class="modal-field">
+      <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+      <input type="month" id="edit-competencia" value="${e.competencia||''}"/>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que este gasto deve impactar no orçamento</div>
     </div>`, {type:'gasto', id});
 }
 async function salvarEdicaoGasto() {
@@ -4437,10 +4502,11 @@ async function salvarEdicaoGasto() {
   const cat  = document.getElementById('edit-cat').value;
   const pay  = document.getElementById('edit-pay').value;
   const cartaoId = pay==='Crédito' ? (document.getElementById('edit-cartao')?.value||null) : null;
+  const competencia = document.getElementById('edit-competencia')?.value || null;
   if (!desc||!amt||!date) throw new Error('Preencha todos os campos');
-  await sbFetch('gastos?id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({description:desc,amount:amt,date,category:cat,payment:pay,cartao_id:cartaoId||null})});
+  await sbFetch('gastos?id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({description:desc,amount:amt,date,category:cat,payment:pay,cartao_id:cartaoId||null,competencia:competencia||null})});
   const i = data.findIndex(x=>x.id===id);
-  if(i>=0) data[i] = {...data[i],description:desc,amount:amt,date,category:cat,payment:pay,cartao_id:cartaoId||null};
+  if(i>=0) data[i] = {...data[i],description:desc,amount:amt,date,category:cat,payment:pay,cartao_id:cartaoId||null,competencia:competencia||null};
   render();
 }
 
@@ -4454,7 +4520,12 @@ function editarConta(id) {
       <div class="modal-field"><label>Valor (R$)</label><input type="number" id="edit-amt" value="${c.valor}" min="0" step="0.01" inputmode="decimal"/></div>
       <div class="modal-field"><label>Vencimento</label><input type="date" id="edit-date" value="${c.vencimento}"/></div>
     </div>
-    <div class="modal-field"><label>Categoria</label><select id="edit-cat">${catOpts}</select></div>`, {type:'conta', id});
+    <div class="modal-field"><label>Categoria</label><select id="edit-cat">${catOpts}</select></div>
+    <div class="modal-field">
+      <label>Mês de competência <span style="color:#64748b;font-size:10px;">(opcional)</span></label>
+      <input type="month" id="edit-competencia" value="${c.competencia||''}"/>
+      <div style="font-size:11px;color:#64748b;margin-top:4px;">💡 Mês que esta conta deve impactar no orçamento</div>
+    </div>`, {type:'conta', id});
 }
 async function salvarEdicaoConta() {
   const id = editContext.id;
@@ -4462,10 +4533,11 @@ async function salvarEdicaoConta() {
   const val  = parseFloat(document.getElementById('edit-amt').value);
   const venc = document.getElementById('edit-date').value;
   const cat  = document.getElementById('edit-cat').value;
+  const competencia = document.getElementById('edit-competencia')?.value || null;
   if (!desc||!val||!venc) throw new Error('Preencha todos os campos');
-  await sbFetch('contas?id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({descricao:desc,valor:val,vencimento:venc,categoria:cat})});
+  await sbFetch('contas?id=eq.'+id, {method:'PATCH', headers:{'Prefer':'return=minimal','Content-Type':'application/json'}, body:JSON.stringify({descricao:desc,valor:val,vencimento:venc,categoria:cat,competencia:competencia||null})});
   const i = contas.findIndex(x=>x.id===id);
-  if(i>=0) contas[i] = {...contas[i],descricao:desc,valor:val,vencimento:venc,categoria:cat};
+  if(i>=0) contas[i] = {...contas[i],descricao:desc,valor:val,vencimento:venc,categoria:cat,competencia:competencia||null};
   renderContas(IS_MOBILE?'mb':'pc'); render();
 }
 
@@ -4600,18 +4672,48 @@ async function delCartao(id) {
 async function fecharFatura(cartaoId, faturaKey) {
   const cartao = cartoes.find(c=>c.id===cartaoId);
   if (!cartao) return;
+
+  // Soma gastos + parcelas da fatura
   const gastosFatura = data.filter(e => e.payment==='Crédito' && e.cartao_id===cartaoId && getFaturaKey(e.date, cartao.dia_fechamento)===faturaKey);
-  const total = gastosFatura.reduce((s,e)=>s+e.amount, 0);
+  const parcelasFatura = parcelas.filter(p => p.cartao_id===cartaoId && restantes(p)>0 && (() => {
+    const proxVenc = proximoVencimento(p);
+    const dateStr = proxVenc.getFullYear()+'-'+String(proxVenc.getMonth()+1).padStart(2,'0')+'-'+String(proxVenc.getDate()).padStart(2,'0');
+    return getFaturaKey(dateStr, cartao.dia_fechamento)===faturaKey;
+  })());
+  const totalGastos = gastosFatura.reduce((s,e)=>s+e.amount, 0);
+  const totalParc   = parcelasFatura.reduce((s,p)=>s+valorParcela(p), 0);
+  const total = totalGastos + totalParc;
+
   if (total === 0) { toast('⚠️ Fatura vazia', false); return; }
+
   const venc = getFaturaVencimento(faturaKey, cartao.dia_vencimento);
   const desc = 'Fatura ' + cartao.nome + ' · ' + fmtFaturaKey(faturaKey);
+
+  // Verifica se já existe conta para esta fatura
+  const jaExiste = contas.find(c => c.descricao === desc);
+  if (jaExiste) { toast('⚠️ Conta já gerada para esta fatura!', false); return; }
+
   if (!confirm(`Gerar Conta a Pagar:\n${desc}\nValor: ${fmt(total)}\nVencimento: ${fmtDate(venc)}`)) return;
+
   try {
-    const r = await sbFetch('contas', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({descricao:desc, valor:total, categoria:'Cartão de Crédito', vencimento:venc, pago:false})});
+    // Usa competência = mês da fatura (faturaKey = 'YYYY-MM')
+    const r = await sbFetch('contas', {
+      method:'POST',
+      headers:{'Prefer':'return=representation'},
+      body: JSON.stringify({
+        descricao: desc,
+        valor: total,
+        categoria: 'Cartão de Crédito',
+        vencimento: venc,
+        competencia: faturaKey, // impacta no mês correto
+        pago: false
+      })
+    });
     const ins = Array.isArray(r)?r[0]:r;
     if (ins) contas.push(ins);
     render();
-    toast('✅ Conta a Pagar criada!');
+    renderCartoes(IS_MOBILE?'mb':'pc');
+    toast('✅ Conta a Pagar criada! Vencimento: ' + fmtDate(venc));
   } catch(e) { toast('❌ '+e.message, false); }
 }
 
@@ -4689,7 +4791,10 @@ function renderCartoes(platform) {
                   </div>
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                     <span class="fatura-total">${fmt(total)}</span>
-                    ${aberta?`<button class="btn-fechar-fatura" onclick="fecharFatura('${cartao.id}','${fk}')">📋 Gerar conta</button>`:''}
+                    ${aberta ? (contas.find(c=>c.descricao===`Fatura ${cartao.nome} · ${fmtFaturaKey(fk)}`)
+                      ? `<span style="font-size:11px;color:#22c55e;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:4px 10px;border-radius:100px;">✅ Conta gerada</span>`
+                      : `<button class="btn-fechar-fatura" onclick="fecharFatura('${cartao.id}','${fk}')">📋 Gerar conta</button>`)
+                    : ''}
                   </div>
                 </div>
                 <div style="font-size:11px;color:#64748b;margin-bottom:10px;">Vencimento: ${fmtDate(venc)}</div>
@@ -5271,6 +5376,7 @@ document.addEventListener('input', e => {
     switch(action) {
       case 'edit-gasto':    editarGasto(id);                  break;
       case 'del-gasto':     delExpense(id);                   break;
+      case 'edit-receita':  editarReceita(id);                break;
       case 'edit-parcela':  editarParcela(id);                break;
       case 'del-parcela':   deletarParcela(id);               break;
       case 'pagar-parcela': pagarParcela(id);                 break;

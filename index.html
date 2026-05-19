@@ -2491,11 +2491,13 @@ function render() {
     set('pc-m-top', top?(CATS[top[0]]?.icon||'')+' '+top[0]:'—');
     set('pc-m-topval', top?fmt(top[1]):'—');
 
-    // Orçamento restante = entradas reais + renda manual - total (gastos + contas + parcelas + cofre)
+    // Orçamento restante
     const entradasMes = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor),0);
     const cofreMes    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor),0);
-    const totalComCofre = total + cofreMes;
+    // base = renda mensal + entradas extras
     const base = gb > 0 ? gb + entradasMes : entradasMes;
+    // total já = gastos + contas + parcelas (sem cofre)
+    const totalComCofre = total + cofreMes;
     if (base > 0) {
       const rem = base - totalComCofre;
       const pct = Math.min(Math.round(totalComCofre/base*100), 100);
@@ -2505,12 +2507,9 @@ function render() {
       if (contasPagasMes > 0) extras.push('contas: '+fmt(contasPagasMes));
       if (parcelasMes > 0)    extras.push('parcelas: '+fmt(parcelasMes));
       if (cofreMes > 0)       extras.push('cofre: '+fmt(cofreMes));
-      const label = gb > 0
-        ? `${pct}% usado${extras.length?' · '+extras.join(' · '):''} · entradas: ${fmt(entradasMes)}`
-        : `${pct}% das entradas usado`;
-      set('pc-m-bpct', label);
+      set('pc-m-bpct', `${pct}% usado${extras.length?' · '+extras.join(' · '):''}`);
     } else {
-      set('pc-m-brem','—'); set('pc-m-bpct','Sem renda ou entradas neste mês');
+      set('pc-m-brem','—'); set('pc-m-bpct','Configure sua renda em Renda Mensal');
     }
 
     // Card Cofre — total acumulado em todos os cofres
@@ -3292,9 +3291,10 @@ function renderSaldo() {
   const rendaMensal   = getBudget('__geral__', mk) || 0;
   const receitasMes   = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor), 0);
   const totalEntradas = rendaMensal + receitasMes;
-  const totalSaidas   = totalGastos + totalContas + totalParcelas + totalCofre;
-  const saldo         = totalEntradas - totalSaidas;
-  const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
+  // Card "Gastos do mês" = gastos avulsos + contas pagas + parcelas (igual ao detalhe)
+  const totalSaidas   = totalGastos + totalContas + totalParcelas;
+  const saldoTotal    = totalEntradas - (totalSaidas + totalCofre);
+  const saldoColor    = saldoTotal >= 0 ? '#22c55e' : '#f87171';
 
   ['pc','mb'].forEach(pfx => {
     const eEl = document.getElementById(pfx+'-saldo-entrada');
@@ -3302,33 +3302,32 @@ function renderSaldo() {
     const lEl = document.getElementById(pfx+'-saldo-liquido');
     if (eEl) eEl.textContent = fmt(totalEntradas);
     if (gEl) gEl.textContent = fmt(totalSaidas);
-    if (lEl) { lEl.textContent = fmt(Math.abs(saldo)); lEl.style.color = saldoColor; }
+    if (lEl) { lEl.textContent = fmt(Math.abs(saldoTotal)); lEl.style.color = saldoColor; }
   });
 }
 
 // Calcula o valor de parcelas que vencem/foram pagas em determinado mês (YYYY-MM)
 function calcParcelasMes(mk) {
-  return parcelas.reduce((sum, p) => {
+  const result = parcelas.reduce((sum, p) => {
     if (p.parcelas_pagas <= 0) return sum;
     const vp = valorParcela(p);
-
-    // Parseia data_inicio como local (evita problema de UTC)
     const parts = (p.data_inicio || '').split('-');
     if (parts.length < 2) return sum;
     const anoInicio = parseInt(parts[0]);
-    const mesInicio = parseInt(parts[1]) - 1; // 0-based
-
+    const mesInicio = parseInt(parts[1]) - 1;
     let count = 0;
     for (let i = 0; i < p.parcelas_pagas; i++) {
-      // Mês da i-ésima parcela
       const totalMes = mesInicio + i;
       const ano = anoInicio + Math.floor(totalMes / 12);
       const mes = totalMes % 12;
       const mesStr = ano + '-' + String(mes + 1).padStart(2, '0');
       if (mesStr === mk) count++;
     }
+    if (count > 0) console.log('[parcela]', p.descricao, 'pagas='+p.parcelas_pagas, 'count='+count, 'vp='+vp, 'contrib='+vp*count);
     return sum + vp * count;
   }, 0);
+  console.log('[calcParcelasMes] mk='+mk, 'total='+result);
+  return result;
 }
 
 // ── RENDER RECEITAS ──
@@ -4430,7 +4429,7 @@ function abrirDetalhe(tipo) {
         </div>
         <div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(239,68,68,0.15);">🛒</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Gastos registrados</div><div class="detail-item-meta">${data.filter(e=>e.date.startsWith(mk)).length} transação(ões)</div></div>
+          <div class="detail-item-info"><div class="detail-item-desc">Gastos registrados</div><div class="detail-item-meta">${data.filter(e=>(e.competencia||e.date.slice(0,7))===mk).length} transação(ões)</div></div>
           <div class="detail-item-val" style="color:#f87171;">${fmt(gastoTotal)}</div>
         </div>
         ${contaTotal>0?`<div class="detail-item">
@@ -4494,13 +4493,13 @@ function abrirDetalhe(tipo) {
         <!-- Entradas que compõem a base -->
         ${gb > 0 ? `<div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(34,197,94,0.15);">🎯</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Renda mensal definida</div><div class="detail-item-meta">Limite cadastrado em Orçamentos</div></div>
+          <div class="detail-item-info"><div class="detail-item-desc">Renda mensal definida</div><div class="detail-item-meta">Configurada em Renda Mensal</div></div>
           <div class="detail-item-val" style="color:#22c55e;">${fmt(gb)}</div>
         </div>` : ''}
-        ${entTotal > 0 ? `<div class="detail-item">
+        ${recTotal > 0 ? `<div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(34,197,94,0.15);">💵</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Entradas do mês</div><div class="detail-item-meta">${receitas.filter(r=>r.data.startsWith(mk)).length} receita(s) registrada(s)</div></div>
-          <div class="detail-item-val" style="color:#22c55e;">${fmt(entTotal)}</div>
+          <div class="detail-item-info"><div class="detail-item-desc">Entradas extras do mês</div><div class="detail-item-meta">${receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).length} receita(s) registrada(s)</div></div>
+          <div class="detail-item-val" style="color:#22c55e;">${fmt(recTotal)}</div>
         </div>` : ''}
       </div>
 
@@ -4508,18 +4507,23 @@ function abrirDetalhe(tipo) {
         <div class="detail-section-title">Saídas do mês</div>
         <div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(239,68,68,0.15);">🛒</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Gastos registrados</div><div class="detail-item-meta">${data.filter(e=>e.date.startsWith(mk)).length} transação(ões)</div></div>
+          <div class="detail-item-info"><div class="detail-item-desc">Gastos registrados</div><div class="detail-item-meta">${data.filter(e=>(e.competencia||e.date.slice(0,7))===mk).length} transação(ões)</div></div>
           <div class="detail-item-val" style="color:#f87171;">${fmt(gastoTotal)}</div>
         </div>
         ${contaTotal > 0 ? `<div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(239,68,68,0.15);">📋</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Contas pagas</div><div class="detail-item-meta">${contas.filter(c=>c.pago&&c.vencimento.startsWith(mk)).length} conta(s)</div></div>
+          <div class="detail-item-info"><div class="detail-item-desc">Contas pagas</div><div class="detail-item-meta">${contas.filter(c=>c.pago&&(c.competencia||c.vencimento.slice(0,7))===mk).length} conta(s)</div></div>
           <div class="detail-item-val" style="color:#f87171;">${fmt(contaTotal)}</div>
         </div>` : ''}
         ${parcTotal > 0 ? `<div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(96,165,250,0.15);">💳</div>
           <div class="detail-item-info"><div class="detail-item-desc">Parcelas do mês</div><div class="detail-item-meta">Cartão de crédito</div></div>
           <div class="detail-item-val" style="color:#f87171;">${fmt(parcTotal)}</div>
+        </div>` : ''}
+        ${cofreTotal > 0 ? `<div class="detail-item">
+          <div class="detail-item-icon" style="background:rgba(45,212,191,0.15);">🏦</div>
+          <div class="detail-item-info"><div class="detail-item-desc">Depósitos no cofre</div></div>
+          <div class="detail-item-val" style="color:#f87171;">${fmt(cofreTotal)}</div>
         </div>` : ''}
         <div class="detail-item" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:4px;padding-top:14px;">
           <div class="detail-item-icon" style="background:rgba(239,68,68,0.15);">📊</div>

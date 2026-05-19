@@ -3296,6 +3296,8 @@ function renderSaldo() {
   const saldo         = totalEntradas - totalSaidas;
   const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
 
+  console.log('[renderSaldo] mk='+mk, {totalGastos, totalContas, totalParcelas, totalCofre, rendaMensal, receitasMes, totalEntradas, totalSaidas, saldo});
+
   ['pc','mb'].forEach(pfx => {
     const eEl = document.getElementById(pfx+'-saldo-entrada');
     const gEl = document.getElementById(pfx+'-saldo-gasto');

@@ -1461,6 +1461,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
         <option value="Transporte">🚗 Transporte</option>
         <option value="Educação">📚 Educação</option>
         <option value="Streaming">🎬 Streaming</option>
+        <option value="Fatura">💳 Fatura</option>
         <option value="Outros">📦 Outros</option>
       </select>
     </div>
@@ -1562,7 +1563,7 @@ body{background:#0f172a!important;color:#f1f5f9!important;font-family:'Sora',san
       <input type="hidden" id="cofre-emoji-val" value="🏦"/>
     </div>
     <div class="modal-field"><label>Nome do cofre</label><input type="text" id="cofre-nome-inp" placeholder="Ex: Viagem para Europa, Carro novo…"/></div>
-    <div class="modal-field"><label>Meta (R$)</label><input type="number" id="cofre-meta-inp" placeholder="Ex: 5000,00" min="0" step="0.01" inputmode="decimal"/></div>
+    <div class="modal-field"><label>Meta (R$) <span style="color:#64748b;font-size:10px;">(opcional)</span></label><input type="number" id="cofre-meta-inp" placeholder="Ex: 5000,00 — deixe em branco se não tiver meta" min="0" step="0.01" inputmode="decimal"/></div>
     <div class="modal-field"><label>Cor</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;" id="cofre-cor-picker"></div>
       <input type="hidden" id="cofre-cor-val" value="#22c55e"/>
@@ -2074,17 +2075,18 @@ const CAT_RECEITA = {
   'Outros':           { icon:'📦', color:'#94a3b8' },
 };
 const CAT_CONTA = {
-  'Moradia':     { icon:'🏠', color:'#fbbf24' },
-  'Energia':     { icon:'💡', color:'#f59e0b' },
-  'Água':        { icon:'💧', color:'#60a5fa' },
-  'Internet':    { icon:'📶', color:'#3b82f6' },
-  'Telefone':    { icon:'📱', color:'#8b5cf6' },
-  'Alimentação': { icon:'🍽', color:'#22c55e' },
-  'Saúde':       { icon:'💊', color:'#f87171' },
-  'Transporte':  { icon:'🚗', color:'#06b6d4' },
-  'Educação':    { icon:'📚', color:'#f472b6' },
-  'Streaming':   { icon:'🎬', color:'#ec4899' },
-  'Outros':      { icon:'📦', color:'#94a3b8' },
+  'Moradia':          { icon:'🏠', color:'#fbbf24' },
+  'Energia':          { icon:'💡', color:'#f59e0b' },
+  'Água':             { icon:'💧', color:'#60a5fa' },
+  'Internet':         { icon:'📶', color:'#3b82f6' },
+  'Telefone':         { icon:'📱', color:'#8b5cf6' },
+  'Alimentação':      { icon:'🍽', color:'#22c55e' },
+  'Saúde':            { icon:'💊', color:'#f87171' },
+  'Transporte':       { icon:'🚗', color:'#06b6d4' },
+  'Educação':         { icon:'📚', color:'#f472b6' },
+  'Streaming':        { icon:'🎬', color:'#ec4899' },
+  'Fatura':           { icon:'💳', color:'#f59e0b' },
+  'Outros':           { icon:'📦', color:'#94a3b8' },
 };
 const EMOJIS = ['😀','😎','🤩','🥳','🦁','🐯','🦊','🐺','🐻','🐼','🐨','🐸','🐧','🦋','🐉','🦄','🚀','⭐','🌙','🔥','💎','🎯','🎮','🎵','💰','🏆','✨','🌈','🍀','💪'];
 const COLORS = ['#22c55e','#3b82f6','#f87171','#a78bfa','#fbbf24','#f472b6','#34d399','#60a5fa','#fb923c','#e879f9','#2dd4bf','#f43f5e','#8b5cf6','#06b6d4','#84cc16'];
@@ -2516,7 +2518,7 @@ function render() {
     const totalAcumCofres = cofres.reduce((s,c)=>s+parseFloat(c.acumulado||0),0);
     const pctCofres = totalMetaCofres>0 ? Math.min(Math.round(totalAcumCofres/totalMetaCofres*100),100) : 0;
     set('pc-m-cofre', fmt(totalAcumCofres));
-    set('pc-m-cofre-sub', cofres.length+' cofre'+(cofres.length!==1?'s':'')+' · meta: '+fmt(totalMetaCofres)+' · '+pctCofres+'%');
+    set('pc-m-cofre-sub', cofres.length+' cofre'+(cofres.length!==1?'s':'')+(totalMetaCofres>0?' · meta: '+fmt(totalMetaCofres)+' · '+pctCofres+'%':' · sem metas'));
 
     renderCatBars('pc', ct); renderTrend('pc', md, vd); renderList(); renderSidebarCats(ct); renderSaldo();
 
@@ -3287,7 +3289,9 @@ function renderSaldo() {
   const totalContas   = contas.filter(c=>c.pago && (c.competencia||c.vencimento.slice(0,7))===mk).reduce((s,c)=>s+parseFloat(c.valor), 0);
   const totalParcelas = calcParcelasMes(mk);
   const totalCofre    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor), 0);
-  const totalEntradas = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor), 0);
+  const rendaMensal   = getBudget('__geral__', mk) || 0; // renda mensal configurada
+  const receitasMes   = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor), 0);
+  const totalEntradas = rendaMensal + receitasMes; // renda base + entradas extras
   const totalSaidas   = totalGastos + totalContas + totalParcelas + totalCofre;
   const saldo         = totalEntradas - totalSaidas;
   const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
@@ -4283,28 +4287,53 @@ function abrirDetalhe(tipo) {
   const content  = document.getElementById('detail-content');
 
   if (tipo === 'entradas') {
-    const items = receitas.filter(r=>r.data.startsWith(mk));
-    const total = items.reduce((s,r)=>s+parseFloat(r.valor),0);
+    const items = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk);
+    const receitasTotal = items.reduce((s,r)=>s+parseFloat(r.valor),0);
+    const rendaMensal = getBudget('__geral__', mk) || 0;
+    const total = rendaMensal + receitasTotal;
+
     titleEl.textContent  = '💵 Entradas de '+mes;
     labelEl.textContent  = 'Total de entradas';
     valEl.textContent    = fmt(total);
     valEl.style.color    = '#22c55e';
 
-    const grupos = {};
-    items.forEach(r=>{ grupos[r.categoria]=(grupos[r.categoria]||[]).concat(r); });
+    let content_html = '';
 
-    content.innerHTML = Object.keys(grupos).length ? Object.entries(grupos).map(([cat, its])=>{
-      const info = CAT_RECEITA[cat]||{icon:'📦',color:'#94a3b8'};
-      const subtotal = its.reduce((s,r)=>s+parseFloat(r.valor),0);
-      return `<div class="detail-section">
-        <div class="detail-section-title">${info.icon} ${cat} · ${fmt(subtotal)}</div>
-        ${its.map(r=>`<div class="detail-item">
-          <div class="detail-item-icon" style="background:${info.color}22;">${info.icon}</div>
-          <div class="detail-item-info"><div class="detail-item-desc">${r.descricao}</div><div class="detail-item-meta">${fmtDate(r.data)}</div></div>
-          <div class="detail-item-val" style="color:#22c55e;">${fmt(parseFloat(r.valor))}</div>
-        </div>`).join('')}
+    // Renda mensal configurada
+    if (rendaMensal > 0) {
+      content_html += `<div class="detail-section">
+        <div class="detail-section-title">🎯 Renda Mensal · ${fmt(rendaMensal)}</div>
+        <div class="detail-item">
+          <div class="detail-item-icon" style="background:#22c55e22;">🎯</div>
+          <div class="detail-item-info"><div class="detail-item-desc">Renda configurada em Renda Mensal</div><div class="detail-item-meta">${mes} ${vd.getFullYear()}</div></div>
+          <div class="detail-item-val" style="color:#22c55e;">${fmt(rendaMensal)}</div>
+        </div>
       </div>`;
-    }).join('') : '<div class="detail-empty">Nenhuma entrada registrada neste mês</div>';
+    }
+
+    // Entradas extras registradas
+    if (items.length) {
+      const grupos = {};
+      items.forEach(r=>{ grupos[r.categoria]=(grupos[r.categoria]||[]).concat(r); });
+      content_html += Object.entries(grupos).map(([cat, its])=>{
+        const info = CAT_RECEITA[cat]||{icon:'📦',color:'#94a3b8'};
+        const subtotal = its.reduce((s,r)=>s+parseFloat(r.valor),0);
+        return `<div class="detail-section">
+          <div class="detail-section-title">${info.icon} ${cat} · ${fmt(subtotal)}</div>
+          ${its.map(r=>`<div class="detail-item">
+            <div class="detail-item-icon" style="background:${info.color}22;">${info.icon}</div>
+            <div class="detail-item-info"><div class="detail-item-desc">${r.descricao}</div><div class="detail-item-meta">${fmtDate(r.data)}${r.competencia?' · 📅 '+r.competencia:''}</div></div>
+            <div class="detail-item-val" style="color:#22c55e;">${fmt(parseFloat(r.valor))}</div>
+          </div>`).join('')}
+        </div>`;
+      }).join('');
+    }
+
+    if (!rendaMensal && !items.length) {
+      content_html = '<div class="detail-empty">Nenhuma entrada registrada neste mês.<br><small style="color:#64748b;">Configure sua renda em ☰ Renda Mensal ou adicione entradas na aba Entradas.</small></div>';
+    }
+
+    content.innerHTML = content_html;
 
   } else if (tipo === 'gastos') {
     const gastoItems    = data.filter(e=>e.date.startsWith(mk));
@@ -4779,7 +4808,7 @@ async function fecharFatura(cartaoId, faturaKey) {
       body: JSON.stringify({
         descricao: desc,
         valor: total,
-        categoria: 'Cartão de Crédito',
+        categoria: 'Fatura',
         vencimento: venc,
         competencia: faturaKey, // impacta no mês correto
         pago: false
@@ -5090,11 +5119,12 @@ function renderCofre(platform) {
   el.innerHTML = cofres.map(c => {
     const deps = cofreDepositos.filter(d => d.cofre_id === c.id);
     const acumulado = parseFloat(c.acumulado) || 0;
-    const meta = parseFloat(c.meta) || 1;
-    const pct = Math.min(Math.round(acumulado / meta * 100), 100);
-    const falta = Math.max(meta - acumulado, 0);
-    const concluido = acumulado >= meta;
-    const barColor = concluido ? '#22c55e' : pct > 75 ? '#fbbf24' : c.cor || '#22c55e';
+    const meta = parseFloat(c.meta) || 0;
+    const temMeta = meta > 0;
+    const pct = temMeta ? Math.min(Math.round(acumulado / meta * 100), 100) : null;
+    const falta = temMeta ? Math.max(meta - acumulado, 0) : null;
+    const concluido = temMeta && acumulado >= meta;
+    const barColor = !temMeta ? (c.cor||'#22c55e') : concluido ? '#22c55e' : pct > 75 ? '#fbbf24' : c.cor || '#22c55e';
 
     const ultimosDeps = deps.slice(0, 3);
 
@@ -5112,14 +5142,14 @@ function renderCofre(platform) {
           <button onclick="deletarCofre('${c.id}')" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:8px;touch-action:manipulation;">🗑</button>
         </div>
       </div>
-      <div class="cofre-pct" style="color:${barColor};">${pct}%</div>
+      <div class="cofre-pct" style="color:${barColor};">${temMeta ? pct+'%' : fmt(acumulado)}</div>
       <div class="cofre-valores">
         <span>Guardado: <strong style="color:#f1f5f9;">${fmt(acumulado)}</strong></span>
-        <span>Meta: <strong style="color:#f1f5f9;">${fmt(meta)}</strong></span>
+        ${temMeta ? `<span>Meta: <strong style="color:#f1f5f9;">${fmt(meta)}</strong></span>` : `<span style="color:#64748b;font-size:11px;">Sem meta definida</span>`}
       </div>
-      <div class="cofre-bar-track"><div class="cofre-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+      ${temMeta ? `<div class="cofre-bar-track"><div class="cofre-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>` : ''}
       <div class="cofre-stats">
-        <div class="cofre-stat"><label>Falta guardar</label><strong style="color:${falta>0?'#f87171':'#22c55e'};">${fmt(falta)}</strong></div>
+        ${temMeta ? `<div class="cofre-stat"><label>Falta guardar</label><strong style="color:${falta>0?'#f87171':'#22c55e'};">${fmt(falta)}</strong></div>` : `<div class="cofre-stat"><label>Total guardado</label><strong style="color:#22c55e;">${fmt(acumulado)}</strong></div>`}
         <div class="cofre-stat"><label>Depósitos</label><strong style="color:#60a5fa;">${deps.length}</strong></div>
       </div>
       ${concluido ? `<div style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:600;color:#22c55e;margin-bottom:10px;">🎉 Meta atingida!</div>` : ''}
@@ -5196,10 +5226,10 @@ function editarCofre(id) {
 async function salvarCofre() {
   const editId = document.getElementById('cofre-edit-id').value;
   const nome = document.getElementById('cofre-nome-inp').value.trim();
-  const meta = parseFloat(document.getElementById('cofre-meta-inp').value);
+  const meta = parseFloat(document.getElementById('cofre-meta-inp').value) || 0;
   const emoji = document.getElementById('cofre-emoji-val').value || '🏦';
   const cor   = document.getElementById('cofre-cor-val').value || '#22c55e';
-  if (!nome || !meta || meta <= 0) { toast('⚠️ Preencha nome e meta', false); return; }
+  if (!nome) { toast('⚠️ Preencha o nome do cofre', false); return; }
   const btn = document.getElementById('btn-salvar-cofre');
   btn.disabled = true; btn.textContent = 'Salvando…';
   try {
@@ -5305,11 +5335,19 @@ const CHAT_SUGGESTIONS = [
 ];
 
 function initChat(pfx) {
-  chatHistory = [];
   const msgs = document.getElementById(pfx+'-chat-messages');
   if (!msgs) return;
+
+  // Se já tem histórico na sessão, apenas re-renderiza as mensagens sem resetar
+  if (chatHistory.length > 0) {
+    msgs.innerHTML = '';
+    chatHistory.forEach(m => addChatMsg(pfx, m.role === 'user' ? 'user' : 'bot', m.content));
+    msgs.scrollTop = msgs.scrollHeight;
+    return;
+  }
+
+  // Primeira vez: mostra boas-vindas e sugestões
   msgs.innerHTML = '';
-  // Mensagem de boas-vindas
   const nome = currentUser?.user_metadata?.full_name?.split(' ')[0] || 'você';
   addChatMsg(pfx, 'bot', `Olá, ${nome}! 👋 Sou seu assessor financeiro virtual.\n\nPosso te ajudar com:\n• Resumo dos seus gastos e saldo\n• Análise por categoria\n• Alertas de contas e parcelas\n• Dicas personalizadas de economia\n\nO que você quer saber?`);
   renderSuggestions(pfx);

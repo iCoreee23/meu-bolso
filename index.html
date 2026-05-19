@@ -3289,14 +3289,12 @@ function renderSaldo() {
   const totalContas   = contas.filter(c=>c.pago && (c.competencia||c.vencimento.slice(0,7))===mk).reduce((s,c)=>s+parseFloat(c.valor), 0);
   const totalParcelas = calcParcelasMes(mk);
   const totalCofre    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk)).reduce((s,d)=>s+parseFloat(d.valor), 0);
-  const rendaMensal   = getBudget('__geral__', mk) || 0; // renda mensal configurada
+  const rendaMensal   = getBudget('__geral__', mk) || 0;
   const receitasMes   = receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).reduce((s,r)=>s+parseFloat(r.valor), 0);
-  const totalEntradas = rendaMensal + receitasMes; // renda base + entradas extras
+  const totalEntradas = rendaMensal + receitasMes;
   const totalSaidas   = totalGastos + totalContas + totalParcelas + totalCofre;
   const saldo         = totalEntradas - totalSaidas;
   const saldoColor    = saldo >= 0 ? '#22c55e' : '#f87171';
-
-  console.log('[renderSaldo] mk='+mk, {totalGastos, totalContas, totalParcelas, totalCofre, rendaMensal, receitasMes, totalEntradas, totalSaidas, saldo});
 
   ['pc','mb'].forEach(pfx => {
     const eEl = document.getElementById(pfx+'-saldo-entrada');
@@ -4340,12 +4338,10 @@ function abrirDetalhe(tipo) {
   } else if (tipo === 'gastos') {
     const gastoItems    = data.filter(e=>(e.competencia||e.date.slice(0,7))===mk);
     const contaItems    = contas.filter(c=>c.pago && (c.competencia||c.vencimento.slice(0,7))===mk);
-    const cofreItems    = cofreDepositos.filter(d=>d.data && d.data.startsWith(mk));
     const parcelaMes    = calcParcelasMes(mk);
     const totalGastos   = gastoItems.reduce((s,e)=>s+e.amount,0);
     const totalContas   = contaItems.reduce((s,c)=>s+parseFloat(c.valor),0);
-    const totalCofre    = cofreItems.reduce((s,d)=>s+parseFloat(d.valor),0);
-    const total         = totalGastos + totalContas + parcelaMes + totalCofre;
+    const total         = totalGastos + totalContas + parcelaMes;
 
     titleEl.textContent = '💸 Gastos de '+mes;
     labelEl.textContent = 'Total de saídas';
@@ -4405,17 +4401,6 @@ function abrirDetalhe(tipo) {
       html += '</div>';
     }
 
-    // Cofre
-    if (totalCofre > 0) {
-      html += `<div class="detail-section"><div class="detail-section-title">🏦 Depósitos no cofre · ${fmt(totalCofre)}</div>`;
-      html += cofreItems.map(d=>`<div class="detail-item">
-        <div class="detail-item-icon" style="background:rgba(45,212,191,0.15);">🏦</div>
-        <div class="detail-item-info"><div class="detail-item-desc">${d.descricao||'Depósito'}</div><div class="detail-item-meta">${fmtDate(d.data)} · Cofre</div></div>
-        <div class="detail-item-val" style="color:#f87171;">${fmt(parseFloat(d.valor))}</div>
-      </div>`).join('');
-      html += '</div>';
-    }
-
     if (!html) html = '<div class="detail-empty">Nenhum gasto registrado neste mês</div>';
     content.innerHTML = html;
 
@@ -4440,7 +4425,7 @@ function abrirDetalhe(tipo) {
         <div class="detail-section-title">Resumo do mês</div>
         <div class="detail-item">
           <div class="detail-item-icon" style="background:rgba(34,197,94,0.15);">💵</div>
-          <div class="detail-item-info"><div class="detail-item-desc">Total de entradas</div><div class="detail-item-meta">${rendaMensal>0?'Renda mensal + ':''} ${recTotal>0?receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).length+' entrada(s) extra(s)':''}</div></div>
+          <div class="detail-item-info"><div class="detail-item-desc">Total de entradas</div><div class="detail-item-meta">${receitas.filter(r=>(r.competencia||r.data.slice(0,7))===mk).length} transação(ões)${rendaMensal>0?' + renda mensal':''}</div></div>
           <div class="detail-item-val" style="color:#22c55e;">${fmt(entTotal)}</div>
         </div>
         <div class="detail-item">
